@@ -203,7 +203,8 @@ INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, type_utilisateur) VA
   ('Kouton', 'Stephane', 'stephane97@dit.sn', 'hashed_pwd_97', 'etudiant'),
   ('Tovignan', 'Helena', 'helena98@dit.sn', 'hashed_pwd_98', 'etudiant'),
   ('Bodjrenou', 'Germain', 'germain99@dit.sn', 'hashed_pwd_99', 'professeur'),
-  ('Dossa', 'Rachel', 'rachel100@dit.sn', 'hashed_pwd_100', 'personnel');
+  ('SARR', 'Adama', 'adamsarr92@dit.sn', 'hashed_pwd_100', 'professeur'),
+  ('Dossa', 'Rachel', 'rachel100@dit.sn', 'hashed_pwd_101', 'personnel');
 
 INSERT INTO livres (titre, auteur, isbn, categorie, annee_publication, nombre_exemplaires, exemplaires_disponibles) VALUES
 ('Intelligence Artificielle : une approche moderne', 'Russell & Norvig', '978-0134610993', 'IA', 2020, 3, 3),
