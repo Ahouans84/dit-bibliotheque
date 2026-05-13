@@ -12,6 +12,17 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  api-gateway:
+    build: ./backend/api-gateway
+    container_name: api_gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - books-service
+      - users-service
+      - loans-service
+      - recommendation-service
+
   books-service:
     build: ./backend/books-service
     container_name: books_service

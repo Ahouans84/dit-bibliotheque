@@ -59,6 +59,29 @@ app.get("/loans/overdue", async (req, res) => {
   }
 });
 
+app.get("/loans/export/ml", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        id,
+        user_id,
+        book_id,
+        loan_date,
+        return_date,
+        status
+      FROM loans
+      ORDER BY loan_date DESC
+    `);
+
+    res.json({
+      count: result.rows.length,
+      data: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post("/loans", async (req, res) => {
   try {
     const { user_id, book_id, status } = req.body;
@@ -69,10 +92,7 @@ app.post("/loans", async (req, res) => {
       });
     }
 
-    // Communication REST avec users-service
     await axios.get(`http://users_service:3002/users/${user_id}`);
-
-    // Communication REST avec books-service
     await axios.get(`http://books_service:3001/books/${book_id}`);
 
     const result = await pool.query(
