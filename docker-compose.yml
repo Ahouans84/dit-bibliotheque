@@ -11,6 +11,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - dit_network
+    profiles:
+      - dev
+      - prod
 
   api-gateway:
     build: ./backend/api-gateway
@@ -22,6 +27,23 @@ services:
       - users-service
       - loans-service
       - recommendation-service
+    networks:
+      - dit_network
+    profiles:
+      - dev
+      - prod
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - dit_network
+    profiles:
+      - prod
 
   books-service:
     build: ./backend/books-service
@@ -30,6 +52,11 @@ services:
       - "3001:3001"
     depends_on:
       - postgres
+    networks:
+      - dit_network
+    profiles:
+      - dev
+      - prod
 
   users-service:
     build: ./backend/users-service
@@ -38,6 +65,11 @@ services:
       - "3002:3002"
     depends_on:
       - postgres
+    networks:
+      - dit_network
+    profiles:
+      - dev
+      - prod
 
   loans-service:
     build: ./backend/loans-service
@@ -46,6 +78,11 @@ services:
       - "3003:3003"
     depends_on:
       - postgres
+    networks:
+      - dit_network
+    profiles:
+      - dev
+      - prod
 
   recommendation-service:
     build: ./backend/recommendation-service-python
@@ -54,6 +91,20 @@ services:
       - "3004:3004"
     depends_on:
       - postgres
+    volumes:
+      - model_data:/app/models
+      - training_data:/app/data
+    networks:
+      - dit_network
+    profiles:
+      - dev
+      - prod
 
 volumes:
   postgres_data:
+  model_data:
+  training_data:
+
+networks:
+  dit_network:
+    driver: bridge

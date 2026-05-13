@@ -8,6 +8,10 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3002
+RUN chown -R node:node /app
+
+USER node
+
+EXPOSE 3001
 
 CMD ["node", "app.js"]

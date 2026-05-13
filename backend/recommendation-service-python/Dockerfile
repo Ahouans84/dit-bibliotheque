@@ -11,11 +11,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY --from=builder /root/.local /root/.local
+RUN useradd -m appuser
+
+COPY --from=builder /root/.local /home/appuser/.local
 
 COPY . .
 
-ENV PATH=/root/.local/bin:$PATH
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
+ENV PATH=/home/appuser/.local/bin:$PATH
 
 EXPOSE 3004
 
