@@ -1,5 +1,6 @@
 const express = require("express");
 const { Pool } = require("pg");
+const axios = require("axios");
 
 const app = express();
 const PORT = 3003;
@@ -15,7 +16,10 @@ const pool = new Pool({
 });
 
 app.get("/", (req, res) => {
-  res.json({ service: "loans-service", status: "running" });
+  res.json({
+    service: "loans-service",
+    status: "running",
+  });
 });
 
 app.get("/loans", async (req, res) => {
@@ -27,18 +31,67 @@ app.get("/loans", async (req, res) => {
   }
 });
 
+app.get("/loans/history", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT * FROM loans
+      ORDER BY loan_date DESC
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/loans/overdue", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM loans
+      WHERE status = 'borrowed'
+      AND loan_date < NOW() - INTERVAL '14 days'
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post("/loans", async (req, res) => {
   try {
     const { user_id, book_id, status } = req.body;
 
+    if (!user_id || !book_id) {
+      return res.status(400).json({
+        error: "user_id et book_id sont obligatoires",
+      });
+    }
+
+    // Communication REST avec users-service
+    await axios.get(`http://users_service:3002/users/${user_id}`);
+
+    // Communication REST avec books-service
+    await axios.get(`http://books_service:3001/books/${book_id}`);
+
     const result = await pool.query(
-      "INSERT INTO loans(user_id, book_id, status) VALUES($1, $2, $3) RETURNING *",
+      `
+      INSERT INTO loans(user_id, book_id, status)
+      VALUES($1, $2, $3)
+      RETURNING *
+      `,
       [user_id, book_id, status || "borrowed"]
     );
 
     res.status(201).json(result.rows[0]);
-
   } catch (error) {
+    if (error.response) {
+      return res.status(400).json({
+        error: "Utilisateur ou livre introuvable",
+      });
+    }
+
     res.status(500).json({ error: error.message });
   }
 });
@@ -50,16 +103,21 @@ app.put("/loans/:id/return", async (req, res) => {
     const result = await pool.query(
       `
       UPDATE loans
-      SET status='returned',
-          return_date=CURRENT_TIMESTAMP
-      WHERE id=$1
+      SET status = 'returned',
+          return_date = CURRENT_TIMESTAMP
+      WHERE id = $1
       RETURNING *
       `,
       [id]
     );
 
-    res.json(result.rows[0]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "Emprunt introuvable",
+      });
+    }
 
+    res.json(result.rows[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -69,21 +127,18 @@ app.delete("/loans/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query(
-      "DELETE FROM loans WHERE id=$1",
-      [id]
-    );
+    await pool.query("DELETE FROM loans WHERE id=$1", [id]);
 
     res.json({
-      message: "Emprunt supprimé"
+      message: "Emprunt supprimé",
     });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-pool.query("SELECT NOW()")
+pool
+  .query("SELECT NOW()")
   .then(() => console.log("Connected to PostgreSQL"))
   .catch((err) => console.error("Database connection error:", err.message));
 
