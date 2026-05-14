@@ -1,7 +1,21 @@
+version: "3.8"
+
+networks:
+  dit_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  model_data:
+  training_data:
+
 services:
+
+  # Base de données PostgreSQL
   postgres:
-    image: postgres:16
+    image: postgres:17
     container_name: dit_bibliotheque_db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: dit_user
       POSTGRES_PASSWORD: dit_password
@@ -13,98 +27,133 @@ services:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - dit_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dit_user -d dit_bibliotheque"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     profiles:
       - dev
       - prod
 
+  # pgAdmin : Interface d'administration PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin1234
+    ports:
+      - "8081:80"
+    networks:
+      - dit_network
+    depends_on:
+      - postgres
+    profiles:
+      - dev
+
+  # API Gateway
   api-gateway:
     build: ./backend/api-gateway
     container_name: api_gateway
+    restart: unless-stopped
     ports:
       - "3000:3000"
+    networks:
+      - dit_network
     depends_on:
       - books-service
       - users-service
       - loans-service
       - recommendation-service
-    networks:
-      - dit_network
     profiles:
       - dev
       - prod
 
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    ports:
-      - "8080:80"
-    depends_on:
-      - api-gateway
-    networks:
-      - dit_network
-    profiles:
-      - prod
-
+  # Service Livres : Node.js / Express
   books-service:
     build: ./backend/books-service
     container_name: books_service
+    restart: unless-stopped
     ports:
       - "3001:3001"
-    depends_on:
-      - postgres
     networks:
       - dit_network
+    depends_on:
+      postgres:
+        condition: service_healthy
     profiles:
       - dev
       - prod
 
+  # Service Utilisateurs : Node.js / Express
   users-service:
     build: ./backend/users-service
     container_name: users_service
+    restart: unless-stopped
     ports:
       - "3002:3002"
-    depends_on:
-      - postgres
     networks:
       - dit_network
+    depends_on:
+      postgres:
+        condition: service_healthy
     profiles:
       - dev
       - prod
 
+  # Service Emprunts : Node.js / Express
   loans-service:
     build: ./backend/loans-service
     container_name: loans_service
+    restart: unless-stopped
     ports:
       - "3003:3003"
-    depends_on:
-      - postgres
     networks:
       - dit_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      books-service:
+        condition: service_started
+      users-service:
+        condition: service_started
     profiles:
       - dev
       - prod
 
+  # Service Recommandation : FastAPI / Python (ML)
   recommendation-service:
     build: ./backend/recommendation-service-python
     container_name: recommendation_service
+    restart: unless-stopped
     ports:
       - "3004:3004"
-    depends_on:
-      - postgres
     volumes:
       - model_data:/app/models
       - training_data:/app/data
     networks:
       - dit_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      loans-service:
+        condition: service_started
     profiles:
       - dev
       - prod
 
-volumes:
-  postgres_data:
-  model_data:
-  training_data:
-
-networks:
-  dit_network:
-    driver: bridge
+  # Frontend
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    networks:
+      - dit_network
+    depends_on:
+      - api-gateway
+    profiles:
+      - prod

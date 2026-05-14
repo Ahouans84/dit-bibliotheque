@@ -1,9 +1,837 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>DIT Bibliothèque</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DIT Bibliothèque Numérique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #13161e;
+      --border:   #1e2330;
+      --accent:   #e8c36a;
+      --accent2:  #4ecca3;
+      --danger:   #e06c75;
+      --text:     #cdd6f4;
+      --muted:    #6c7086;
+      --radius:   6px;
+
+      --books:    #4ecca3;
+      --users:    #89b4fa;
+      --loans:    #f38ba8;
+      --reco:     #e8c36a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .logo span { color: var(--text); font-weight: 400; }
+
+    nav {
+      display: flex;
+      gap: 0.25rem;
+      flex: 1;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: color .2s, background .2s;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    nav button:hover { color: var(--text); background: var(--border); }
+
+    nav button.active {
+      color: var(--bg);
+      background: var(--accent);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 8px var(--accent2);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .page-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .page-title.books  { color: var(--books); }
+    .page-title.users  { color: var(--users); }
+    .page-title.loans  { color: var(--loans); }
+    .page-title.reco   { color: var(--reco);  }
+
+    .count-badge {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: border-color .2s, transform .15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+    }
+
+    .card.book::before  { background: var(--books); }
+    .card.user::before  { background: var(--users); }
+    .card.loan::before  { background: var(--loans); }
+
+    .card:hover {
+      border-color: var(--muted);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+
+    .card-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.04em;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: opacity .15s, transform .1s;
+    }
+
+    .btn:active { transform: scale(.97); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 500;
+    }
+
+    .btn-outline {
+      background: none;
+      border-color: var(--border);
+      color: var(--muted);
+    }
+
+    .btn-outline:hover { border-color: var(--muted); color: var(--text); }
+
+    .btn-danger {
+      background: none;
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover { background: var(--danger); color: var(--bg); }
+
+    .btn-success {
+      background: var(--accent2);
+      color: var(--bg);
+      font-weight: 500;
+    }
+
+    .form-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-panel h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+
+    label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    input, select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+      padding: 0.5rem 0.75rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    input:focus, select:focus { border-color: var(--accent); }
+
+    select option { background: var(--surface); }
+
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-bar input { flex: 1; }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .badge-borrowed  { background: rgba(243,139,168,.15); color: var(--loans); }
+    .badge-returned  { background: rgba(78,204,163,.15);  color: var(--books); }
+    .badge-overdue   { background: rgba(224,108,117,.2);  color: var(--danger); }
+    .badge-etudiant  { background: rgba(137,180,250,.12); color: var(--users); }
+    .badge-professeur{ background: rgba(232,196,106,.12); color: var(--accent); }
+    .badge-personnel { background: rgba(205,214,244,.1);  color: var(--text);  }
+
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      font-size: 0.8rem;
+      max-width: 320px;
+      z-index: 999;
+      transform: translateY(120%);
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+      border-left: 3px solid var(--accent2);
+    }
+
+    #toast.show { transform: translateY(0); }
+    #toast.error { border-left-color: var(--danger); }
+
+    .empty {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+    }
+
+    .loader {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+    .reco-form {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+      margin-bottom: 2rem;
+    }
+
+    .reco-form .form-group { flex: 1; }
+
+    .reco-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .reco-rank {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent);
+      min-width: 2rem;
+      text-align: center;
+      opacity: .6;
+    }
+
+    .reco-score {
+      margin-left: auto;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .train-btn-wrap {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      nav button { padding: .3rem .5rem; font-size: .7rem; }
+      .logo { font-size: 1rem; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Frontend Placeholder</h1>
+
+<header>
+  <div class="logo">DIT <span>Bibliothèque</span></div>
+  <nav>
+    <button class="active" onclick="navigate('books')"> Livres</button>
+    <button onclick="navigate('users')"> Utilisateurs</button>
+    <button onclick="navigate('loans')"> Emprunts</button>
+    <button onclick="navigate('reco')"> Recommandations</button>
+  </nav>
+  <div class="status-dot" title="Services actifs"></div>
+</header>
+
+<main>
+
+  <section id="books" class="section active">
+    <div class="page-header">
+      <h1 class="page-title books">Catalogue</h1>
+      <span class="count-badge" id="books-count"></span>
+    </div>
+
+    <div class="form-panel">
+      <h3>Ajouter un livre</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titre</label>
+          <input id="b-title" placeholder="Clean Code" />
+        </div>
+        <div class="form-group">
+          <label>Auteur</label>
+          <input id="b-author" placeholder="Robert Martin" />
+        </div>
+        <div class="form-group">
+          <label>ISBN</label>
+          <input id="b-isbn" placeholder="978-0132350884" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addBook()">+ Ajouter</button>
+    </div>
+
+    <div class="search-bar">
+      <input id="b-search" placeholder="Rechercher par titre, auteur ou ISBN…" oninput="searchBooks()" />
+      <button class="btn btn-outline" onclick="loadBooks()">↺ Tout afficher</button>
+    </div>
+
+    <div id="books-grid" class="grid"><div class="loader">CHARGEMENT…</div></div>
+  </section>
+
+  <section id="users" class="section">
+    <div class="page-header">
+      <h1 class="page-title users">Utilisateurs</h1>
+      <span class="count-badge" id="users-count"></span>
+    </div>
+
+    <div class="form-panel">
+      <h3>Créer un utilisateur</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nom complet</label>
+          <input id="u-name" placeholder="Seydou Kaboré" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input id="u-email" type="email" placeholder="seydou@dit.sn" />
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="u-type">
+            <option value="Etudiant">Étudiant</option>
+            <option value="Professeur">Professeur</option>
+            <option value="Personnel">Personnel</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addUser()">+ Créer</button>
+    </div>
+
+    <div id="users-grid" class="grid"><div class="loader">CHARGEMENT…</div></div>
+  </section>
+
+  <section id="loans" class="section">
+    <div class="page-header">
+      <h1 class="page-title loans">Emprunts</h1>
+      <span class="count-badge" id="loans-count"></span>
+    </div>
+
+    <div class="form-panel">
+      <h3>Nouvel emprunt</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ID Utilisateur</label>
+          <input id="l-userid" type="number" placeholder="1" min="1" />
+        </div>
+        <div class="form-group">
+          <label>ID Livre</label>
+          <input id="l-bookid" type="number" placeholder="1" min="1" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addLoan()">+ Emprunter</button>
+    </div>
+
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;">
+      <button class="btn btn-outline" onclick="loadLoans()">Tous les emprunts</button>
+      <button class="btn btn-outline" onclick="loadOverdue()">⚠ Retards</button>
+      <button class="btn btn-outline" onclick="loadHistory()">Historique complet</button>
+    </div>
+
+    <div id="loans-grid" class="grid"><div class="loader">CHARGEMENT…</div></div>
+  </section>
+
+  <section id="reco" class="section">
+    <div class="page-header">
+      <h1 class="page-title reco">Recommandations</h1>
+    </div>
+
+    <div class="reco-form">
+      <div class="form-group">
+        <label>ID Utilisateur</label>
+        <input id="r-userid" type="number" placeholder="1" min="1" />
+      </div>
+      <button class="btn btn-primary" onclick="getRecos()">Obtenir les recommandations</button>
+    </div>
+
+    <div id="reco-list"></div>
+
+    <div class="train-btn-wrap">
+      <p style="font-size:.75rem;color:var(--muted);margin-bottom:1rem;letter-spacing:.04em;">
+        Réentraîner le modèle ML sur l'historique des emprunts actuels.
+      </p>
+      <button class="btn btn-success" onclick="trainModel()">⚙ Réentraîner le modèle</button>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const API = {
+    books: 'http://localhost:3001',
+    users: 'http://localhost:3002',
+    loans: 'http://localhost:3003',
+    reco:  'http://localhost:3004',
+  };
+
+  function navigate(section) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(section).classList.add('active');
+    document.querySelectorAll('nav button')[['books','users','loans','reco'].indexOf(section)].classList.add('active');
+
+    if (section === 'books') loadBooks();
+    if (section === 'users') loadUsers();
+    if (section === 'loans') loadLoans();
+    if (section === 'reco')  document.getElementById('reco-list').innerHTML = '';
+  }
+
+  let toastTimer;
+  function toast(msg, type = 'ok') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = type === 'error' ? 'error show' : 'show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  async function api(url, opts = {}) {
+    opts.headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+    const r = await fetch(url, opts);
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({ error: r.statusText }));
+      throw new Error(err.error || r.statusText);
+    }
+    return r.json();
+  }
+
+  async function loadBooks() {
+    const grid = document.getElementById('books-grid');
+    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+    try {
+      const books = await api(`${API.books}/books`);
+      document.getElementById('books-count').textContent = `${books.length} livre${books.length !== 1 ? 's' : ''}`;
+      renderBooks(books);
+    } catch (e) {
+      grid.innerHTML = `<div class="empty">Impossible de joindre books-service<br/><small>${e.message}</small></div>`;
+    }
+  }
+
+  function renderBooks(books) {
+    const grid = document.getElementById('books-grid');
+    if (!books.length) { grid.innerHTML = '<div class="empty">Aucun livre dans le catalogue</div>'; return; }
+    grid.innerHTML = books.map(b => `
+      <div class="card book">
+        <div class="card-title">${esc(b.title)}</div>
+        <div class="card-sub">✍ ${esc(b.author)}</div>
+        <div class="card-sub">ISBN: ${esc(b.isbn)}</div>
+        <div class="card-sub" style="color:var(--muted)">ID: ${b.id}</div>
+        <div class="card-actions">
+          <button class="btn btn-danger" onclick="deleteBook(${b.id})">Supprimer</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function addBook() {
+    const title = v('b-title'), author = v('b-author'), isbn = v('b-isbn');
+    if (!title || !author || !isbn) { toast('Remplissez tous les champs', 'error'); return; }
+    try {
+      await api(`${API.books}/books`, { method: 'POST', body: JSON.stringify({ title, author, isbn }) });
+      toast(`"${title}" ajouté avec succès`);
+      ['b-title','b-author','b-isbn'].forEach(id => document.getElementById(id).value = '');
+      loadBooks();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  async function deleteBook(id) {
+    if (!confirm('Supprimer ce livre ?')) return;
+    try {
+      await api(`${API.books}/books/${id}`, { method: 'DELETE' });
+      toast('Livre supprimé');
+      loadBooks();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  let searchTimer;
+  function searchBooks() {
+    clearTimeout(searchTimer);
+    const q = document.getElementById('b-search').value.trim();
+    if (!q) { loadBooks(); return; }
+    searchTimer = setTimeout(async () => {
+      const grid = document.getElementById('books-grid');
+      grid.innerHTML = '<div class="loader">RECHERCHE…</div>';
+      try {
+        const params = new URLSearchParams();
+        params.set('title', q);
+        const books = await api(`${API.books}/books/search?${params}`);
+        renderBooks(books);
+      } catch (e) { toast(e.message, 'error'); }
+    }, 300);
+  }
+
+  async function loadUsers() {
+    const grid = document.getElementById('users-grid');
+    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+    try {
+      const users = await api(`${API.users}/users`);
+      document.getElementById('users-count').textContent = `${users.length} utilisateur${users.length !== 1 ? 's' : ''}`;
+      if (!users.length) { grid.innerHTML = '<div class="empty">Aucun utilisateur enregistré</div>'; return; }
+      grid.innerHTML = users.map(u => `
+        <div class="card user">
+          <div class="card-title">${esc(u.full_name)}</div>
+          <div class="card-sub">✉ ${esc(u.email)}</div>
+          <div class="card-sub" style="margin-top:.35rem">
+            <span class="badge badge-${u.user_type?.toLowerCase()}">${esc(u.user_type)}</span>
+          </div>
+          <div class="card-sub" style="color:var(--muted)">ID: ${u.id}</div>
+          <div class="card-actions">
+            <button class="btn btn-danger" onclick="deleteUser(${u.id})">Supprimer</button>
+          </div>
+        </div>
+      `).join('');
+    } catch (e) {
+      grid.innerHTML = `<div class="empty">Impossible de joindre users-service<br/><small>${e.message}</small></div>`;
+    }
+  }
+
+  async function addUser() {
+    const full_name = v('u-name'), email = v('u-email'), user_type = v('u-type');
+    if (!full_name || !email) { toast('Remplissez les champs obligatoires', 'error'); return; }
+    try {
+      await api(`${API.users}/users`, { method: 'POST', body: JSON.stringify({ full_name, email, user_type }) });
+      toast(`${full_name} créé(e) avec succès`);
+      ['u-name','u-email'].forEach(id => document.getElementById(id).value = '');
+      loadUsers();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  async function deleteUser(id) {
+    if (!confirm('Supprimer cet utilisateur ?')) return;
+    try {
+      await api(`${API.users}/users/${id}`, { method: 'DELETE' });
+      toast('Utilisateur supprimé');
+      loadUsers();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  async function loadLoans() {
+    const grid = document.getElementById('loans-grid');
+    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+    try {
+      const loans = await api(`${API.loans}/loans`);
+      document.getElementById('loans-count').textContent = `${loans.length} emprunt${loans.length !== 1 ? 's' : ''}`;
+      renderLoans(loans);
+    } catch (e) {
+      grid.innerHTML = `<div class="empty">Impossible de joindre loans-service<br/><small>${e.message}</small></div>`;
+    }
+  }
+
+  async function loadOverdue() {
+    const grid = document.getElementById('loans-grid');
+    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+    try {
+      const loans = await api(`${API.loans}/loans/overdue`);
+      document.getElementById('loans-count').textContent = `${loans.length} retard${loans.length !== 1 ? 's' : ''}`;
+      renderLoans(loans, true);
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  async function loadHistory() {
+    const grid = document.getElementById('loans-grid');
+    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+    try {
+      const loans = await api(`${API.loans}/loans/history`);
+      document.getElementById('loans-count').textContent = `${loans.length} au total`;
+      renderLoans(loans);
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  function renderLoans(loans, overdue = false) {
+    const grid = document.getElementById('loans-grid');
+    if (!loans.length) { grid.innerHTML = '<div class="empty">Aucun emprunt trouvé</div>'; return; }
+    grid.innerHTML = loans.map(l => {
+      const statusClass = overdue ? 'badge-overdue' : (l.status === 'returned' ? 'badge-returned' : 'badge-borrowed');
+      const statusLabel = overdue ? 'EN RETARD' : (l.status || 'borrowed');
+      const date = l.loan_date ? new Date(l.loan_date).toLocaleDateString('fr-FR') : '—';
+      const returnDate = l.return_date ? new Date(l.return_date).toLocaleDateString('fr-FR') : '—';
+      return `
+        <div class="card loan">
+          <div class="card-title">Emprunt #${l.id}</div>
+          <div class="card-sub">👤 Utilisateur: ${l.user_id}</div>
+          <div class="card-sub">📖 Livre: ${l.book_id}</div>
+          <div class="card-sub">📅 Emprunté: ${date}</div>
+          ${l.return_date ? `<div class="card-sub">OK! Retourné: ${returnDate}</div>` : ''}
+          <div style="margin-top:.75rem">
+            <span class="badge ${statusClass}">${statusLabel}</span>
+          </div>
+          ${l.status !== 'returned' ? `
+          <div class="card-actions">
+            <button class="btn btn-success" onclick="returnLoan(${l.id})">Retourner</button>
+            <button class="btn btn-danger" onclick="deleteLoan(${l.id})">Supprimer</button>
+          </div>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function addLoan() {
+    const user_id = parseInt(v('l-userid')), book_id = parseInt(v('l-bookid'));
+    if (!user_id || !book_id) { toast('Entrez un ID utilisateur et un ID livre', 'error'); return; }
+    try {
+      await api(`${API.loans}/loans`, { method: 'POST', body: JSON.stringify({ user_id, book_id }) });
+      toast(`Emprunt créé — Livre ${book_id} → Utilisateur ${user_id}`);
+      ['l-userid','l-bookid'].forEach(id => document.getElementById(id).value = '');
+      loadLoans();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  async function returnLoan(id) {
+    try {
+      await api(`${API.loans}/loans/${id}/return`, { method: 'PUT' });
+      toast(`Emprunt #${id} retourné`);
+      loadLoans();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  async function deleteLoan(id) {
+    if (!confirm('Supprimer cet emprunt ?')) return;
+    try {
+      await api(`${API.loans}/loans/${id}`, { method: 'DELETE' });
+      toast('Emprunt supprimé');
+      loadLoans();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  async function getRecos() {
+    const user_id = v('r-userid');
+    if (!user_id) { toast('Entrez un ID utilisateur', 'error'); return; }
+    const list = document.getElementById('reco-list');
+    list.innerHTML = '<div class="loader">ANALYSE EN COURS…</div>';
+    try {
+      const data = await api(`${API.reco}/recommendations/${user_id}`);
+      const recos = data.recommendations || [];
+      if (!recos.length) { list.innerHTML = '<div class="empty">Aucune recommandation disponible</div>'; return; }
+      list.innerHTML = `
+        <p style="font-size:.72rem;color:var(--muted);margin-bottom:1rem;letter-spacing:.04em;">
+          RECOMMANDATIONS POUR L'UTILISATEUR #${user_id}
+        </p>
+        ${recos.map((r, i) => `
+          <div class="reco-card">
+            <div class="reco-rank">${i + 1}</div>
+            <div>
+              <div style="font-size:.85rem;font-weight:500">Livre #${r.book_id}</div>
+              <div style="font-size:.7rem;color:var(--muted)">book_id: ${r.book_id}</div>
+            </div>
+            <div class="reco-score">score: ${(r.score * 100).toFixed(0)}%</div>
+          </div>
+        `).join('')}
+      `;
+    } catch (e) { list.innerHTML = `<div class="empty">${e.message}</div>`; toast(e.message, 'error'); }
+  }
+
+  async function trainModel() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = '⚙ Entraînement en cours…';
+    try {
+      const data = await api(`${API.reco}/train`, { method: 'POST' });
+      toast(data.message || 'Modèle réentraîné avec succès');
+    } catch (e) { toast(e.message, 'error'); }
+    finally {
+      btn.disabled = false;
+      btn.textContent = '⚙ Réentraîner le modèle';
+    }
+  }
+
+  const v  = id => document.getElementById(id)?.value?.trim() ?? '';
+  const esc = s  => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  loadBooks();
+</script>
 </body>
 </html>
