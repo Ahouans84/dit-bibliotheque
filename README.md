@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="logo/Logo_dit.png" alt="DIT Logo" width="120"/>
+<img src="logo/Logo_dit.png" alt="/home/djidjooh/dit-bibliotheque/docs/Images/LogoDIT.png" width="120"/>
 
 # 📚 Bibliothèque Numérique DIT
 
