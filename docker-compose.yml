@@ -1,38 +1,42 @@
 version: "3.8"
 
 networks:
-  dit-network:
+  dit_network:
     driver: bridge
 
 volumes:
-  postgres-data:
-  model-data:
-  training-data:
+  postgres_data:
+  model_data:
+  training_data:
 
 services:
 
   # Base de données PostgreSQL
-  db:
+  postgres:
     image: postgres:17
-    container_name: postgres-server
+    container_name: dit_bibliotheque_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: db_dit
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - dit-network
+      POSTGRES_USER: dit_user
+      POSTGRES_PASSWORD: dit_password
+      POSTGRES_DB: dit_bibliotheque
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - dit_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d db_dit"]
+      test: ["CMD-SHELL", "pg_isready -U dit_user -d dit_bibliotheque"]
       interval: 10s
       timeout: 5s
       retries: 5
+    profiles:
+      - dev
+      - prod
 
-  # pgAdmin — Interface d'administration PostgreSQL
+  # pgAdmin : Interface d'administration PostgreSQL
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -41,103 +45,115 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin1234
     ports:
-      - "8080:80"
+      - "8081:80"
     networks:
-      - dit-network
+      - dit_network
     depends_on:
-      - db
+      - postgres
+    profiles:
+      - dev
 
-  # Service Livres — Node.js / Express
+  # API Gateway
+  api-gateway:
+    build: ./backend/api-gateway
+    container_name: api_gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - dit_network
+    depends_on:
+      - books-service
+      - users-service
+      - loans-service
+      - recommendation-service
+    profiles:
+      - dev
+      - prod
+
+  # Service Livres : Node.js / Express
   books-service:
     build: ./backend/books-service
-    container_name: books-service
+    container_name: books_service
     restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://admin:admin123@postgres-server:5432/db_dit
-      PORT: 3001
     ports:
       - "3001:3001"
     networks:
-      - dit-network
+      - dit_network
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
+    profiles:
+      - dev
+      - prod
 
-  # Service Utilisateurs — Node.js / Express
+  # Service Utilisateurs : Node.js / Express
   users-service:
     build: ./backend/users-service
-    container_name: users-service
+    container_name: users_service
     restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://admin:admin123@postgres-server:5432/db_dit
-      PORT: 3002
     ports:
       - "3002:3002"
     networks:
-      - dit-network
+      - dit_network
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
+    profiles:
+      - dev
+      - prod
 
-  # Service Emprunts — Node.js / Express
+  # Service Emprunts : Node.js / Express
   loans-service:
     build: ./backend/loans-service
-    container_name: loans-service
+    container_name: loans_service
     restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://admin:admin123@postgres-server:5432/db_dit
-      BOOKS_SERVICE_URL: http://books-service:3001
-      USERS_SERVICE_URL: http://users-service:3002
-      PORT: 3003
     ports:
       - "3003:3003"
     networks:
-      - dit-network
+      - dit_network
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
       books-service:
         condition: service_started
       users-service:
         condition: service_started
+    profiles:
+      - dev
+      - prod
 
-  # Service Recommandation — FastAPI / Python (ML)
+  # Service Recommandation : FastAPI / Python (ML)
   recommendation-service:
     build: ./backend/recommendation-service-python
-    container_name: recommendation-service
+    container_name: recommendation_service
     restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://admin:admin123@postgres-server:5432/db_dit
-      LOANS_SERVICE_URL: http://loans-service:3003
-    volumes:
-      - model-data:/app/models
-      - training-data:/app/data
     ports:
       - "3004:3004"
+    volumes:
+      - model_data:/app/models
+      - training_data:/app/data
     networks:
-      - dit-network
+      - dit_network
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
       loans-service:
         condition: service_started
+    profiles:
+      - dev
+      - prod
 
   # Frontend
   frontend:
     build: ./frontend
     container_name: frontend
     restart: unless-stopped
-    environment:
-      REACT_APP_BOOKS_URL: http://localhost:3001
-      REACT_APP_USERS_URL: http://localhost:3002
-      REACT_APP_LOANS_URL: http://localhost:3003
-      REACT_APP_RECO_URL: http://localhost:3004
     ports:
-      - "3000:80"
+      - "8080:80"
     networks:
-      - dit-network
+      - dit_network
     depends_on:
-      - books-service
-      - users-service
-      - loans-service
-      - recommendation-service
+      - api-gateway
+    profiles:
+      - prod
