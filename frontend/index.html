@@ -17,7 +17,6 @@
       --text:     #cdd6f4;
       --muted:    #6c7086;
       --radius:   6px;
-
       --books:    #4ecca3;
       --users:    #89b4fa;
       --loans:    #f38ba8;
@@ -35,13 +34,53 @@
       flex-direction: column;
     }
 
+    /* ── OVERLAY & MODAL ─────────────────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      z-index: 200;
+      backdrop-filter: blur(3px);
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 380px;
+      z-index: 201;
+      box-shadow: 0 24px 64px rgba(0,0,0,.5);
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: .35rem;
+    }
+
+    .modal-sub {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      letter-spacing: .04em;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── HEADER ──────────────────────────────────────────────────── */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       padding: 0 2rem;
       display: flex;
       align-items: center;
-      gap: 2rem;
+      gap: 1.25rem;
       height: 64px;
       position: sticky;
       top: 0;
@@ -50,52 +89,47 @@
 
     .logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 900;
       color: var(--accent);
-      letter-spacing: -0.02em;
+      letter-spacing: -.02em;
       white-space: nowrap;
+      flex-shrink: 0;
     }
-
     .logo span { color: var(--text); font-weight: 400; }
 
-    nav {
-      display: flex;
-      gap: 0.25rem;
-      flex: 1;
-    }
+    nav { display: flex; gap: .2rem; flex: 1; }
 
     nav button {
       background: none;
       border: none;
       color: var(--muted);
       font-family: 'DM Mono', monospace;
-      font-size: 0.78rem;
-      padding: 0.4rem 0.9rem;
+      font-size: .75rem;
+      padding: .4rem .8rem;
       border-radius: var(--radius);
       cursor: pointer;
       transition: color .2s, background .2s;
-      letter-spacing: 0.05em;
+      letter-spacing: .05em;
       text-transform: uppercase;
     }
-
     nav button:hover { color: var(--text); background: var(--border); }
+    nav button.active { color: var(--bg); background: var(--accent); font-weight: 500; }
 
-    nav button.active {
-      color: var(--bg);
-      background: var(--accent);
-      font-weight: 500;
-    }
-
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--accent2);
-      box-shadow: 0 0 8px var(--accent2);
-      margin-left: auto;
+    .auth-zone {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
       flex-shrink: 0;
     }
 
+    .auth-name {
+      font-size: .78rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ── MAIN ────────────────────────────────────────────────────── */
     main {
       flex: 1;
       padding: 2rem;
@@ -120,21 +154,21 @@
       font-weight: 700;
       line-height: 1;
     }
-
-    .page-title.books  { color: var(--books); }
-    .page-title.users  { color: var(--users); }
-    .page-title.loans  { color: var(--loans); }
-    .page-title.reco   { color: var(--reco);  }
+    .page-title.books { color: var(--books); }
+    .page-title.users { color: var(--users); }
+    .page-title.loans { color: var(--loans); }
+    .page-title.reco  { color: var(--reco);  }
 
     .count-badge {
-      font-size: 0.75rem;
+      font-size: .72rem;
       color: var(--muted);
-      letter-spacing: 0.08em;
+      letter-spacing: .08em;
     }
 
+    /* ── GRID & CARDS ────────────────────────────────────────────── */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 1rem;
       margin-bottom: 2rem;
     }
@@ -148,115 +182,97 @@
       position: relative;
       overflow: hidden;
     }
-
     .card::before {
       content: '';
       position: absolute;
       top: 0; left: 0;
       width: 3px; height: 100%;
     }
-
     .card.book::before  { background: var(--books); }
     .card.user::before  { background: var(--users); }
     .card.loan::before  { background: var(--loans); }
-
-    .card:hover {
-      border-color: var(--muted);
-      transform: translateY(-2px);
-    }
+    .card:hover { border-color: var(--muted); transform: translateY(-2px); }
 
     .card-title {
       font-family: 'Playfair Display', serif;
       font-size: 1rem;
       font-weight: 700;
-      margin-bottom: 0.4rem;
+      margin-bottom: .4rem;
       line-height: 1.3;
     }
 
     .card-sub {
-      font-size: 0.72rem;
+      font-size: .72rem;
       color: var(--muted);
-      margin-bottom: 0.25rem;
-      letter-spacing: 0.04em;
+      margin-bottom: .25rem;
+      letter-spacing: .04em;
     }
 
     .card-actions {
       display: flex;
-      gap: 0.5rem;
+      gap: .5rem;
       margin-top: 1rem;
+      flex-wrap: wrap;
     }
 
+    /* ── BUTTONS ─────────────────────────────────────────────────── */
     .btn {
       font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      padding: 0.35rem 0.75rem;
+      font-size: .72rem;
+      padding: .35rem .75rem;
       border-radius: var(--radius);
       border: 1px solid transparent;
       cursor: pointer;
-      letter-spacing: 0.05em;
+      letter-spacing: .05em;
       text-transform: uppercase;
       transition: opacity .15s, transform .1s;
+      white-space: nowrap;
     }
-
     .btn:active { transform: scale(.97); }
     .btn:disabled { opacity: .4; cursor: not-allowed; }
 
-    .btn-primary {
-      background: var(--accent);
-      color: var(--bg);
-      font-weight: 500;
-    }
+    .btn-primary { background: var(--accent); color: var(--bg); font-weight: 500; }
+    .btn-primary:hover { opacity: .88; }
 
-    .btn-outline {
-      background: none;
-      border-color: var(--border);
-      color: var(--muted);
-    }
-
+    .btn-outline { background: none; border-color: var(--border); color: var(--muted); }
     .btn-outline:hover { border-color: var(--muted); color: var(--text); }
 
-    .btn-danger {
-      background: none;
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-
+    .btn-danger { background: none; border-color: var(--danger); color: var(--danger); }
     .btn-danger:hover { background: var(--danger); color: var(--bg); }
 
-    .btn-success {
-      background: var(--accent2);
-      color: var(--bg);
-      font-weight: 500;
-    }
+    .btn-success { background: var(--accent2); color: var(--bg); font-weight: 500; }
+    .btn-success:hover { opacity: .88; }
 
+    .btn-sm { padding: .25rem .55rem; font-size: .65rem; }
+
+    /* ── FORMS ───────────────────────────────────────────────────── */
     .form-panel {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
-
     .form-panel h3 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      margin-bottom: 1.25rem;
+      font-size: 1rem;
+      margin-bottom: 1.1rem;
       color: var(--text);
     }
 
     .form-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: .65rem;
+      margin-bottom: .85rem;
     }
 
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group { display: flex; flex-direction: column; gap: .3rem; }
 
     label {
-      font-size: 0.68rem;
+      font-size: .65rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: .08em;
       color: var(--muted);
     }
 
@@ -266,88 +282,78 @@
       border-radius: var(--radius);
       color: var(--text);
       font-family: 'DM Mono', monospace;
-      font-size: 0.82rem;
-      padding: 0.5rem 0.75rem;
+      font-size: .8rem;
+      padding: .45rem .7rem;
       outline: none;
       transition: border-color .2s;
     }
-
     input:focus, select:focus { border-color: var(--accent); }
-
     select option { background: var(--surface); }
 
+    /* ── SEARCH BAR ──────────────────────────────────────────────── */
     .search-bar {
       display: flex;
-      gap: 0.5rem;
+      gap: .5rem;
       margin-bottom: 1.5rem;
+      flex-wrap: wrap;
     }
+    .search-bar input  { flex: 1; min-width: 180px; }
+    .search-bar select { min-width: 160px; }
 
-    .search-bar input { flex: 1; }
-
+    /* ── BADGES ──────────────────────────────────────────────────── */
     .badge {
       display: inline-block;
-      font-size: 0.65rem;
-      padding: 0.2rem 0.5rem;
+      font-size: .62rem;
+      padding: .18rem .5rem;
       border-radius: 20px;
-      letter-spacing: 0.06em;
+      letter-spacing: .06em;
       text-transform: uppercase;
       font-weight: 500;
     }
+    .badge-borrowed   { background: rgba(243,139,168,.15); color: var(--loans); }
+    .badge-returned   { background: rgba(78,204,163,.15);  color: var(--books); }
+    .badge-overdue    { background: rgba(224,108,117,.2);  color: var(--danger); }
+    .badge-etudiant   { background: rgba(137,180,250,.12); color: var(--users); }
+    .badge-professeur { background: rgba(232,196,106,.12); color: var(--accent); }
+    .badge-personnel  { background: rgba(205,214,244,.1);  color: var(--text);  }
 
-    .badge-borrowed  { background: rgba(243,139,168,.15); color: var(--loans); }
-    .badge-returned  { background: rgba(78,204,163,.15);  color: var(--books); }
-    .badge-overdue   { background: rgba(224,108,117,.2);  color: var(--danger); }
-    .badge-etudiant  { background: rgba(137,180,250,.12); color: var(--users); }
-    .badge-professeur{ background: rgba(232,196,106,.12); color: var(--accent); }
-    .badge-personnel { background: rgba(205,214,244,.1);  color: var(--text);  }
-
+    /* ── TOAST ───────────────────────────────────────────────────── */
     #toast {
       position: fixed;
-      bottom: 2rem;
-      right: 2rem;
+      bottom: 2rem; right: 2rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 0.85rem 1.25rem;
-      font-size: 0.8rem;
+      padding: .85rem 1.25rem;
+      font-size: .78rem;
       max-width: 320px;
       z-index: 999;
       transform: translateY(120%);
       transition: transform .3s cubic-bezier(.34,1.56,.64,1);
       border-left: 3px solid var(--accent2);
     }
-
-    #toast.show { transform: translateY(0); }
+    #toast.show  { transform: translateY(0); }
     #toast.error { border-left-color: var(--danger); }
 
+    /* ── MISC ────────────────────────────────────────────────────── */
     .empty {
       text-align: center;
       padding: 3rem;
       color: var(--muted);
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
+      font-size: .8rem;
+      letter-spacing: .06em;
     }
-
     .loader {
       text-align: center;
       padding: 2rem;
       color: var(--muted);
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
+      font-size: .72rem;
+      letter-spacing: .1em;
       animation: pulse 1.2s ease-in-out infinite;
     }
-
     @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
 
-    .reco-form {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-end;
-      margin-bottom: 2rem;
-    }
-
-    .reco-form .form-group { flex: 1; }
-
+    /* ── RECO ────────────────────────────────────────────────────── */
     .reco-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -356,193 +362,552 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: .5rem;
+      transition: border-color .2s;
     }
+    .reco-card:hover { border-color: var(--accent); }
 
     .reco-rank {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 900;
       color: var(--accent);
       min-width: 2rem;
       text-align: center;
       opacity: .6;
     }
+    .reco-score { margin-left: auto; font-size: .7rem; color: var(--muted); white-space: nowrap; }
 
-    .reco-score {
-      margin-left: auto;
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-
-    .train-btn-wrap {
+    .train-section {
       margin-top: 1.5rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--border);
     }
 
-    .stats-row {
+    /* ── PROGRESS BAR ────────────────────────────────────────────── */
+    .progress-bar {
+      background: var(--border);
+      border-radius: 20px;
+      height: 6px;
+      overflow: hidden;
+      margin: .5rem 0;
+    }
+    .progress-fill {
+      background: var(--accent2);
+      height: 100%;
+      transition: width .5s ease;
+    }
+
+    /* ── AUTOCOMPLETE ────────────────────────────────────────────── */
+    .ac-wrap { position: relative; }
+
+    .ac-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      z-index: 50;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+
+    .ac-item {
+      padding: .55rem .8rem;
+      cursor: pointer;
+      font-size: .78rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .5rem;
+      transition: background .15s;
+    }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover { background: var(--border); }
+    .ac-item-label { font-weight: 500; color: var(--text); }
+    .ac-item-meta  { font-size: .65rem; color: var(--muted); white-space: nowrap; }
+    .ac-empty { padding: .6rem .8rem; font-size: .72rem; color: var(--muted); text-align: center; }
+
+    .ac-selected {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-top: .35rem;
+      background: rgba(78,204,163,.1);
+      border: 1px solid rgba(78,204,163,.3);
+      border-radius: var(--radius);
+      padding: .4rem .7rem;
+      font-size: .75rem;
+    }
+    .ac-selected-name { color: var(--accent2); font-weight: 500; flex: 1; }
+    .ac-selected-meta { color: var(--muted); font-size: .65rem; }
+    .ac-clear {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: .9rem; line-height: 1;
+      padding: 0 .2rem; transition: color .15s;
+    }
+    .ac-clear:hover { color: var(--danger); }
+
+    /* ── USER HEADER ─────────────────────────────────────────────── */
+    .user-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: .5rem;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      nav button { padding: .3rem .45rem; font-size: .65rem; }
+      .logo { font-size: .95rem; }
+      main { padding: 1rem; }
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── DASHBOARD KPIs ──────────────────────────────────────────── */
+    .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
       margin-bottom: 2rem;
     }
-
-    .stat-card {
+    .kpi-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.25rem;
-      text-align: center;
+      padding: 1.25rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s, transform .15s;
+      cursor: default;
     }
-
-    .stat-num {
+    .kpi-card:hover { border-color: var(--muted); transform: translateY(-2px); }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .kpi-card.kpi-books::before { background: var(--books); }
+    .kpi-card.kpi-loans::before { background: var(--accent); }
+    .kpi-card.kpi-late::before  { background: var(--danger); }
+    .kpi-card.kpi-fine::before  { background: var(--loans); }
+    .kpi-value {
       font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 900;
-      line-height: 1;
-      margin-bottom: 0.35rem;
+      font-size: 2.5rem; font-weight: 900; line-height: 1;
+      margin: .3rem 0;
+    }
+    .kpi-books .kpi-value { color: var(--books); }
+    .kpi-loans .kpi-value { color: var(--accent); }
+    .kpi-late  .kpi-value { color: var(--danger); }
+    .kpi-fine  .kpi-value { color: var(--loans); }
+    .kpi-label { font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+    .kpi-sub   { font-size: .68rem; color: var(--muted); margin-top: .3rem; }
+    .dash-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; color: var(--text);
+      margin: 1.75rem 0 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--border);
     }
 
-    .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    /* ── LOANS STATS BAR ─────────────────────────────────────────── */
+    .loans-stats {
+      display: flex; gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .75rem 1.25rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .loans-stat-item {
+      display: flex; flex-direction: column; gap: .1rem;
+      flex: 1; min-width: 80px; text-align: center;
+    }
+    .loans-stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700;
+    }
+    .loans-stat-lbl { font-size: .6rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
 
-    @media (max-width: 640px) {
-      .stats-row { grid-template-columns: repeat(2,1fr); }
-      nav button { padding: .3rem .5rem; font-size: .7rem; }
-      .logo { font-size: 1rem; }
+    /* ── SIDE PANEL ──────────────────────────────────────────────── */
+    .panel-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 200;
+      backdrop-filter: blur(2px);
+    }
+    .side-panel {
+      position: fixed; top: 0; right: 0;
+      height: 100vh; width: min(500px, 100vw);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 201;
+      display: flex; flex-direction: column;
+      box-shadow: -24px 0 64px rgba(0,0,0,.5);
+      transform: translateX(100%);
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .side-panel.open { transform: translateX(0); }
+    .side-panel-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .side-panel-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .side-panel-body  { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
+    .side-panel-close {
+      background: none; border: none; color: var(--muted);
+      font-size: 1.2rem; cursor: pointer; line-height: 1; padding: 0 .3rem;
+      transition: color .15s;
+    }
+    .side-panel-close:hover { color: var(--danger); }
+
+    /* ── LOAN ROW ────────────────────────────────────────────────── */
+    .loan-row {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: .85rem 1rem;
+      margin-bottom: .5rem; transition: border-color .2s;
+    }
+    .loan-row:hover { border-color: var(--muted); }
+    .loan-row-title { font-size: .85rem; font-weight: 500; margin-bottom: .3rem; }
+    .loan-row-meta  { font-size: .68rem; color: var(--muted); line-height: 1.7; }
+    .loan-row-actions { margin-top: .6rem; }
+
+    /* ── RECO HISTORY TAGS ───────────────────────────────────────── */
+    .history-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 1rem; }
+    .history-tag {
+      background: rgba(78,204,163,.1); border: 1px solid rgba(78,204,163,.2);
+      border-radius: 20px; padding: .2rem .65rem;
+      font-size: .65rem; color: var(--accent2); letter-spacing: .05em;
     }
   </style>
 </head>
 <body>
 
+<!-- ── USER LOANS SIDE PANEL ─────────────────────────────────────────── -->
+<div id="user-panel-overlay" class="panel-overlay hidden" onclick="closeSidePanel()"></div>
+<div id="user-side-panel" class="side-panel" role="dialog">
+  <div class="side-panel-header">
+    <div>
+      <div class="side-panel-title" id="side-panel-name">Emprunts</div>
+      <div style="font-size:.65rem;color:var(--muted);margin-top:.15rem" id="side-panel-sub"></div>
+    </div>
+    <button class="side-panel-close" onclick="closeSidePanel()" title="Fermer">✕</button>
+  </div>
+  <div class="side-panel-body" id="side-panel-body">
+    <div class="loader">CHARGEMENT…</div>
+  </div>
+</div>
+
+<!-- ── LOGIN MODAL ───────────────────────────────────────────────────── -->
+<div id="login-overlay" class="overlay hidden" onclick="closeModal()"></div>
+<div id="login-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-title">Connexion</div>
+  <div class="modal-sub">Identifiez-vous pour accéder à toutes les fonctionnalités</div>
+  <div class="form-group" style="margin-bottom:.75rem">
+    <label>Adresse email</label>
+    <input id="login-email" type="email" placeholder="admin@dit.sn" autocomplete="email" />
+  </div>
+  <div class="form-group" style="margin-bottom:1.25rem">
+    <label>Mot de passe</label>
+    <input id="login-pass" type="password" placeholder="••••••••"
+           onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password" />
+  </div>
+  <div style="display:flex;gap:.5rem;justify-content:flex-end">
+    <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-primary" onclick="doLogin()" id="login-btn">Se connecter</button>
+  </div>
+  <div style="margin-top:1rem;font-size:.65rem;color:var(--muted);text-align:center">
+    Gestionnaire : admin@dit.sn / admin2026 · Étudiant : mamadou1@dit.sn / dit2026
+  </div>
+</div>
+
+<!-- ── HEADER ────────────────────────────────────────────────────────── -->
 <header>
   <div class="logo">DIT <span>Bibliothèque</span></div>
+
   <nav>
-    <button class="active" onclick="navigate('books')"> Livres</button>
-    <button onclick="navigate('users')"> Utilisateurs</button>
-    <button onclick="navigate('loans')"> Emprunts</button>
-    <button onclick="navigate('reco')"> Recommandations</button>
+    <button id="nav-books" class="active" onclick="navigate('books')">Livres</button>
+    <button id="nav-users"     class="hidden" onclick="navigate('users')">Utilisateurs</button>
+    <button id="nav-loans"                    onclick="navigate('loans')">Emprunts</button>
+    <button id="nav-dashboard" class="hidden" onclick="navigate('dashboard')">Dashboard</button>
+    <button id="nav-reco"                     onclick="navigate('reco')">Recommandations</button>
   </nav>
-  <div class="status-dot" title="Services actifs"></div>
+
+  <!-- Zone guest -->
+  <div id="guest-zone" class="auth-zone">
+    <button class="btn btn-outline" onclick="openModal()">Connexion</button>
+  </div>
+
+  <!-- Zone connecté -->
+  <div id="auth-zone" class="auth-zone hidden">
+    <div style="text-align:right">
+      <div class="auth-name" id="auth-name"></div>
+      <span class="badge" id="auth-role" style="font-size:.58rem"></span>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="doLogout()">Déconnexion</button>
+  </div>
 </header>
 
+<!-- ── MAIN ──────────────────────────────────────────────────────────── -->
 <main>
 
+  <!-- ════════════════ TABLEAU DE BORD (gestionnaire) ════════════════ -->
+  <section id="dashboard" class="section">
+    <div class="page-header">
+      <h1 class="page-title" style="color:var(--accent)">Tableau de bord</h1>
+      <span class="count-badge" id="dash-updated"></span>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-books">
+        <div class="kpi-label">Livres disponibles</div>
+        <div class="kpi-value" id="kpi-dispo">—</div>
+        <div class="kpi-sub" id="kpi-dispo-sub">exemplaires au catalogue</div>
+      </div>
+      <div class="kpi-card kpi-loans">
+        <div class="kpi-label">Emprunts en cours</div>
+        <div class="kpi-value" id="kpi-cours">—</div>
+        <div class="kpi-sub" id="kpi-cours-sub">emprunts actifs</div>
+      </div>
+      <div class="kpi-card kpi-late">
+        <div class="kpi-label">En retard</div>
+        <div class="kpi-value" id="kpi-retard">—</div>
+        <div class="kpi-sub" id="kpi-retard-sub">livres non rendus</div>
+      </div>
+      <div class="kpi-card kpi-fine">
+        <div class="kpi-label">Pénalités totales</div>
+        <div class="kpi-value" id="kpi-penalites">—</div>
+        <div class="kpi-sub">FCFA à recouvrer</div>
+      </div>
+    </div>
+
+    <div class="dash-section-title">⚠ Retards et pénalités en cours</div>
+    <div id="dash-overdue-list"><div class="loader">CHARGEMENT…</div></div>
+
+    <div class="dash-section-title">📋 Emprunts récents</div>
+    <div id="dash-recent-list"><div class="loader">CHARGEMENT…</div></div>
+  </section>
+
+  <!-- ════════════════ LIVRES ════════════════ -->
   <section id="books" class="section active">
     <div class="page-header">
       <h1 class="page-title books">Catalogue</h1>
       <span class="count-badge" id="books-count"></span>
     </div>
 
-    <div class="form-panel">
+    <!-- Formulaire ajout livre — gestionnaire uniquement -->
+    <div class="form-panel" id="add-book-panel" style="display:none">
       <h3>Ajouter un livre</h3>
       <div class="form-row">
         <div class="form-group">
-          <label>Titre</label>
+          <label>Titre *</label>
           <input id="b-title" placeholder="Clean Code" />
         </div>
         <div class="form-group">
-          <label>Auteur</label>
+          <label>Auteur *</label>
           <input id="b-author" placeholder="Robert Martin" />
         </div>
         <div class="form-group">
-          <label>ISBN</label>
+          <label>ISBN *</label>
           <input id="b-isbn" placeholder="978-0132350884" />
+        </div>
+        <div class="form-group">
+          <label>Catégorie</label>
+          <input id="b-cat" placeholder="IA, DevOps…" />
+        </div>
+        <div class="form-group">
+          <label>Exemplaires</label>
+          <input id="b-copies" type="number" placeholder="3" min="1" value="1" />
         </div>
       </div>
       <button class="btn btn-primary" onclick="addBook()">+ Ajouter</button>
     </div>
 
+    <!-- Barre de recherche + filtre domaine -->
     <div class="search-bar">
-      <input id="b-search" placeholder="Rechercher par titre, auteur ou ISBN…" oninput="searchBooks()" />
-      <button class="btn btn-outline" onclick="loadBooks()">↺ Tout afficher</button>
+      <input id="b-search" placeholder="Rechercher par titre, auteur ou ISBN…" oninput="applyBookFilters()" />
+      <select id="b-category" onchange="applyBookFilters()">
+        <option value="">Tous les domaines</option>
+      </select>
+      <button class="btn btn-outline" onclick="resetBookFilters()">↺ Tout</button>
     </div>
 
     <div id="books-grid" class="grid"><div class="loader">CHARGEMENT…</div></div>
   </section>
 
+  <!-- ════════════════ UTILISATEURS (gestionnaire) ════════════════ -->
   <section id="users" class="section">
     <div class="page-header">
       <h1 class="page-title users">Utilisateurs</h1>
       <span class="count-badge" id="users-count"></span>
     </div>
 
-    <div class="form-panel">
-      <h3>Créer un utilisateur</h3>
+    <!-- Formulaire inscription — gestionnaire uniquement -->
+    <div class="form-panel" id="add-user-panel" style="display:none">
+      <h3>Inscrire un nouvel utilisateur</h3>
       <div class="form-row">
         <div class="form-group">
-          <label>Nom complet</label>
-          <input id="u-name" placeholder="Seydou Kaboré" />
+          <label>Nom *</label>
+          <input id="u-nom" placeholder="Diallo" />
         </div>
         <div class="form-group">
-          <label>Email</label>
-          <input id="u-email" type="email" placeholder="seydou@dit.sn" />
+          <label>Prénom *</label>
+          <input id="u-prenom" placeholder="Mamadou" />
         </div>
         <div class="form-group">
-          <label>Type</label>
-          <select id="u-type">
-            <option value="Etudiant">Étudiant</option>
-            <option value="Professeur">Professeur</option>
-            <option value="Personnel">Personnel</option>
+          <label>Email *</label>
+          <input id="u-email" type="email" placeholder="mamadou@dit.sn" />
+        </div>
+        <div class="form-group">
+          <label>Mot de passe *</label>
+          <input id="u-password" type="password" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label>Type *</label>
+          <select id="u-role">
+            <option value="etudiant">Étudiant</option>
+            <option value="professeur">Professeur</option>
+            <option value="personnel">Personnel</option>
           </select>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="addUser()">+ Créer</button>
+      <button class="btn btn-primary" onclick="registerUser()">+ Inscrire</button>
+    </div>
+
+    <!-- Recherche par initiaux ou identifiant -->
+    <div class="search-bar">
+      <input id="u-search"
+             placeholder="Rechercher par initiaux (MD, AS…) ou identifiant (u012)…"
+             oninput="applyUserSearch()" />
+      <select id="u-type-filter" onchange="applyUserSearch()">
+        <option value="">Tous les types</option>
+        <option value="etudiant">Étudiants</option>
+        <option value="professeur">Professeurs</option>
+        <option value="personnel">Personnel</option>
+      </select>
+      <button class="btn btn-outline" onclick="resetUserSearch()">↺ Tout</button>
     </div>
 
     <div id="users-grid" class="grid"><div class="loader">CHARGEMENT…</div></div>
   </section>
 
+  <!-- ════════════════ EMPRUNTS ════════════════ -->
   <section id="loans" class="section">
     <div class="page-header">
       <h1 class="page-title loans">Emprunts</h1>
       <span class="count-badge" id="loans-count"></span>
     </div>
 
-    <div class="form-panel">
-      <h3>Nouvel emprunt</h3>
+    <!-- Formulaire emprunt — gestionnaire uniquement -->
+    <div class="form-panel" id="add-loan-panel" style="display:none">
+      <h3>Valider un emprunt</h3>
       <div class="form-row">
+
+        <!-- Sélection utilisateur par nom ou identifiant -->
         <div class="form-group">
-          <label>ID Utilisateur</label>
-          <input id="l-userid" type="number" placeholder="1" min="1" />
+          <label>Utilisateur — nom ou identifiant (u012)</label>
+          <div class="ac-wrap">
+            <input id="ac-user-input"
+                   placeholder="Taper nom, prénom ou u012…"
+                   oninput="filterUsersAC(this.value)"
+                   onfocus="filterUsersAC(this.value)"
+                   autocomplete="off" />
+            <div class="ac-dropdown hidden" id="ac-user-list"></div>
+          </div>
+          <div class="ac-selected hidden" id="ac-user-selected"></div>
         </div>
+
+        <!-- Sélection livre par titre ou auteur -->
         <div class="form-group">
-          <label>ID Livre</label>
-          <input id="l-bookid" type="number" placeholder="1" min="1" />
+          <label>Livre — titre ou auteur</label>
+          <div class="ac-wrap">
+            <input id="ac-book-input"
+                   placeholder="Taper titre, auteur ou catégorie…"
+                   oninput="filterBooksAC(this.value)"
+                   onfocus="filterBooksAC(this.value)"
+                   autocomplete="off" />
+            <div class="ac-dropdown hidden" id="ac-book-list"></div>
+          </div>
+          <div class="ac-selected hidden" id="ac-book-selected"></div>
         </div>
+
       </div>
-      <button class="btn btn-primary" onclick="addLoan()">+ Emprunter</button>
+      <button class="btn btn-primary" onclick="addLoan()">+ Valider l'emprunt</button>
     </div>
 
-    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;">
-      <button class="btn btn-outline" onclick="loadLoans()">Tous les emprunts</button>
-      <button class="btn btn-outline" onclick="loadOverdue()">⚠ Retards</button>
+    <!-- Stats bar — gestionnaire uniquement -->
+    <div id="loans-stats-bar" style="display:none">
+      <div class="loans-stats">
+        <div class="loans-stat-item">
+          <div class="loans-stat-val" id="ls-cours" style="color:var(--accent)">—</div>
+          <div class="loans-stat-lbl">En cours</div>
+        </div>
+        <div class="loans-stat-item">
+          <div class="loans-stat-val" id="ls-retard" style="color:var(--danger)">—</div>
+          <div class="loans-stat-lbl">En retard</div>
+        </div>
+        <div class="loans-stat-item">
+          <div class="loans-stat-val" id="ls-retournes" style="color:var(--books)">—</div>
+          <div class="loans-stat-lbl">Retournés</div>
+        </div>
+        <div class="loans-stat-item">
+          <div class="loans-stat-val" id="ls-penalites" style="color:var(--loans)">—</div>
+          <div class="loans-stat-lbl">Pénalités FCFA</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="loadLoans()">En cours</button>
+      <button class="btn btn-outline" onclick="loadOverdue()">⚠ Retards &amp; pénalités</button>
       <button class="btn btn-outline" onclick="loadHistory()">Historique complet</button>
+      <button class="btn btn-outline" id="btn-my-loans" style="display:none" onclick="loadMyLoans()">Mes emprunts</button>
     </div>
 
     <div id="loans-grid" class="grid"><div class="loader">CHARGEMENT…</div></div>
   </section>
 
+  <!-- ════════════════ RECOMMANDATIONS ════════════════ -->
   <section id="reco" class="section">
     <div class="page-header">
       <h1 class="page-title reco">Recommandations</h1>
     </div>
 
-    <div class="reco-form">
-      <div class="form-group">
-        <label>ID Utilisateur</label>
-        <input id="r-userid" type="number" placeholder="1" min="1" />
+    <!-- Pas connecté -->
+    <div id="reco-guest" style="display:none">
+      <div class="empty">
+        <div style="font-size:2rem;margin-bottom:.75rem">🔒</div>
+        <div style="margin-bottom:1rem">Connectez-vous pour accéder aux recommandations personnalisées.</div>
+        <button class="btn btn-primary" onclick="openModal()">Se connecter</button>
       </div>
-      <button class="btn btn-primary" onclick="getRecos()">Obtenir les recommandations</button>
     </div>
 
-    <div id="reco-list"></div>
+    <!-- Connecté -->
+    <div id="reco-content" style="display:none">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem">
+        <div style="flex:1">
+          <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">Recommandations pour</div>
+          <div id="reco-user-label" style="font-size:.88rem;color:var(--text)"></div>
+        </div>
+        <button class="btn btn-primary" onclick="getRecos()">Obtenir les recommandations</button>
+      </div>
 
-    <div class="train-btn-wrap">
-      <p style="font-size:.75rem;color:var(--muted);margin-bottom:1rem;letter-spacing:.04em;">
-        Réentraîner le modèle ML sur l'historique des emprunts actuels.
-      </p>
-      <button class="btn btn-success" onclick="trainModel()">⚙ Réentraîner le modèle</button>
+      <div id="reco-list"></div>
+
+      <!-- Entraînement — gestionnaire uniquement -->
+      <div class="train-section" id="train-section" style="display:none">
+        <p style="font-size:.72rem;color:var(--muted);margin-bottom:.85rem;letter-spacing:.04em">
+          Réentraîner le modèle SVD sur l'historique complet des emprunts actuels.
+        </p>
+        <button class="btn btn-success" onclick="trainModel()">⚙ Réentraîner le modèle</button>
+      </div>
     </div>
   </section>
 
@@ -551,287 +916,1072 @@
 <div id="toast"></div>
 
 <script>
-  const API = {
-    books: 'http://localhost:3001',
-    users: 'http://localhost:3002',
-    loans: 'http://localhost:3003',
-    reco:  'http://localhost:3004',
+/* ─────────────────────────────────────────────────────────────────────
+   CONFIGURATION
+───────────────────────────────────────────────────────────────────── */
+const API = {
+  books: 'http://localhost:3001',
+  users: 'http://localhost:3002',
+  loans: 'http://localhost:3003',
+  reco:  'http://localhost:3004',
+};
+
+/* ─────────────────────────────────────────────────────────────────────
+   ÉTAT GLOBAL
+───────────────────────────────────────────────────────────────────── */
+let auth     = null;   // { token, user: { id, nom, prenom, email, type_utilisateur, model_id } }
+let allBooks = [];
+let allUsers = [];
+let currentSection = 'books';
+
+const isGestionnaire = () => auth?.user?.type_utilisateur === 'personnel';
+const authHeaders    = () => auth ? { Authorization: `Bearer ${auth.token}` } : {};
+
+/* ─────────────────────────────────────────────────────────────────────
+   MODAL CONNEXION
+───────────────────────────────────────────────────────────────────── */
+function openModal() {
+  document.getElementById('login-overlay').classList.remove('hidden');
+  document.getElementById('login-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('login-email').focus(), 80);
+}
+
+function closeModal() {
+  document.getElementById('login-overlay').classList.add('hidden');
+  document.getElementById('login-modal').classList.add('hidden');
+}
+
+async function doLogin() {
+  const email = v('login-email');
+  const pass  = v('login-pass');
+  if (!email || !pass) { toast('Email et mot de passe requis', 'error'); return; }
+
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = 'Connexion…';
+
+  try {
+    const data = await apiCall(`${API.users}/api/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({ email, mot_de_passe: pass }),
+    });
+    auth = { token: data.token, user: data.utilisateur };
+    try { localStorage.setItem('dit_auth', JSON.stringify(auth)); } catch (_) {}
+    closeModal();
+    updateAuthUI();
+    toast(`Bienvenue, ${auth.user.prenom} ${auth.user.nom} !`);
+    navigate(currentSection);
+  } catch (e) {
+    toast(e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Se connecter';
+  }
+}
+
+function doLogout() {
+  auth = null;
+  try { localStorage.removeItem('dit_auth'); } catch (_) {}
+  updateAuthUI();
+  toast('Vous avez été déconnecté.');
+  navigate('books');
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   MISE À JOUR DE L'UI SELON LE RÔLE
+───────────────────────────────────────────────────────────────────── */
+function updateAuthUI() {
+  const guestZone = document.getElementById('guest-zone');
+  const authZone  = document.getElementById('auth-zone');
+
+  if (auth) {
+    guestZone.classList.add('hidden');
+    authZone.classList.remove('hidden');
+    document.getElementById('auth-name').textContent = `${auth.user.prenom} ${auth.user.nom}`;
+    const roleEl = document.getElementById('auth-role');
+    roleEl.textContent = auth.user.type_utilisateur;
+    roleEl.className   = `badge badge-${auth.user.type_utilisateur}`;
+  } else {
+    guestZone.classList.remove('hidden');
+    authZone.classList.add('hidden');
+  }
+
+  // Éléments réservés au gestionnaire
+  const isGest = isGestionnaire();
+  setDisplay('add-book-panel', isGest);
+  setDisplay('add-user-panel', isGest);
+  setDisplay('add-loan-panel', isGest);
+  setDisplay('train-section',  isGest);
+  setDisplay('nav-users',      isGest, true);
+  setDisplay('nav-dashboard',  isGest, true);
+  setDisplay('btn-my-loans',   !!auth);
+
+  // Section recommandations
+  updateRecoSection();
+}
+
+function setDisplay(id, show, isInlineEl = false) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (show) { el.classList.remove('hidden'); el.style.display = ''; }
+  else       { el.style.display = 'none'; }
+}
+
+function updateRecoSection() {
+  const isLogged = !!auth;
+  document.getElementById('reco-guest').style.display   = isLogged ? 'none'  : 'block';
+  document.getElementById('reco-content').style.display = isLogged ? 'block' : 'none';
+  if (isLogged) {
+    const mid = auth.user.model_id ? ` (${auth.user.model_id})` : '';
+    document.getElementById('reco-user-label').textContent =
+      `${auth.user.prenom} ${auth.user.nom}${mid}`;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   NAVIGATION
+───────────────────────────────────────────────────────────────────── */
+function navigate(section) {
+  if (section === 'users' && !isGestionnaire()) {
+    toast('Cette section est réservée au gestionnaire.', 'error');
+    return;
+  }
+
+  currentSection = section;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(section).classList.add('active');
+  const btn = document.getElementById(`nav-${section}`);
+  if (btn) btn.classList.add('active');
+
+  switch (section) {
+    case 'books':     loadBooks();      break;
+    case 'users':     loadUsers();      break;
+    case 'loans':     loadLoans();      break;
+    case 'dashboard': loadDashboard();  break;
+    case 'reco':
+      updateRecoSection();
+      document.getElementById('reco-list').innerHTML = '';
+      break;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────────────────────────────── */
+let toastTimer;
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = type === 'error' ? 'error show' : 'show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   API HELPER
+───────────────────────────────────────────────────────────────────── */
+async function apiCall(url, opts = {}) {
+  opts.headers = {
+    'Content-Type': 'application/json',
+    ...authHeaders(),
+    ...(opts.headers || {}),
   };
-
-  function navigate(section) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById(section).classList.add('active');
-    document.querySelectorAll('nav button')[['books','users','loans','reco'].indexOf(section)].classList.add('active');
-
-    if (section === 'books') loadBooks();
-    if (section === 'users') loadUsers();
-    if (section === 'loans') loadLoans();
-    if (section === 'reco')  document.getElementById('reco-list').innerHTML = '';
+  const r = await fetch(url, opts);
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({ error: r.statusText }));
+    throw new Error(err.error || r.statusText);
   }
+  return r.json();
+}
 
-  let toastTimer;
-  function toast(msg, type = 'ok') {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = type === 'error' ? 'error show' : 'show';
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+/* ─────────────────────────────────────────────────────────────────────
+   ══ LIVRES ══
+───────────────────────────────────────────────────────────────────── */
+async function loadBooks() {
+  const grid = document.getElementById('books-grid');
+  grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+  try {
+    const data = await apiCall(`${API.books}/api/livres?page=1&limit=200`);
+    allBooks = data.livres || [];
+    populateCategories();
+    applyBookFilters();
+  } catch (e) {
+    grid.innerHTML = `<div class="empty">Impossible de joindre le service livres<br/><small>${esc(e.message)}</small></div>`;
   }
+}
 
-  async function api(url, opts = {}) {
-    opts.headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
-    const r = await fetch(url, opts);
-    if (!r.ok) {
-      const err = await r.json().catch(() => ({ error: r.statusText }));
-      throw new Error(err.error || r.statusText);
-    }
-    return r.json();
+function populateCategories() {
+  const cats    = [...new Set(allBooks.map(b => b.categorie).filter(Boolean))].sort();
+  const sel     = document.getElementById('b-category');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Tous les domaines</option>' +
+    cats.map(c => `<option value="${esc(c)}"${c === current ? ' selected' : ''}>${esc(c)}</option>`).join('');
+}
+
+function applyBookFilters() {
+  const q   = v('b-search').toLowerCase();
+  const cat = v('b-category');
+  let books = allBooks;
+
+  if (cat) books = books.filter(b => b.categorie === cat);
+  if (q)   books = books.filter(b =>
+    (b.titre  || '').toLowerCase().includes(q) ||
+    (b.auteur || '').toLowerCase().includes(q) ||
+    (b.isbn   || '').toLowerCase().includes(q)
+  );
+
+  const suffix = (cat || q) ? ' (filtrés)' : '';
+  document.getElementById('books-count').textContent =
+    `${books.length} livre${books.length !== 1 ? 's' : ''}${suffix}`;
+  renderBooks(books);
+}
+
+function resetBookFilters() {
+  document.getElementById('b-search').value   = '';
+  document.getElementById('b-category').value = '';
+  applyBookFilters();
+}
+
+function renderBooks(books) {
+  const grid = document.getElementById('books-grid');
+  if (!books.length) {
+    grid.innerHTML = '<div class="empty">Aucun livre trouvé pour ces critères</div>';
+    return;
   }
-
-  async function loadBooks() {
-    const grid = document.getElementById('books-grid');
-    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
-    try {
-      const books = await api(`${API.books}/books`);
-      document.getElementById('books-count').textContent = `${books.length} livre${books.length !== 1 ? 's' : ''}`;
-      renderBooks(books);
-    } catch (e) {
-      grid.innerHTML = `<div class="empty">Impossible de joindre books-service<br/><small>${e.message}</small></div>`;
-    }
-  }
-
-  function renderBooks(books) {
-    const grid = document.getElementById('books-grid');
-    if (!books.length) { grid.innerHTML = '<div class="empty">Aucun livre dans le catalogue</div>'; return; }
-    grid.innerHTML = books.map(b => `
+  grid.innerHTML = books.map(b => {
+    const dispo   = b.exemplaires_disponibles ?? b.nombre_exemplaires ?? 0;
+    const total   = b.nombre_exemplaires ?? dispo;
+    const dispoColor = dispo > 0 ? 'var(--accent2)' : 'var(--danger)';
+    return `
       <div class="card book">
-        <div class="card-title">${esc(b.title)}</div>
-        <div class="card-sub">✍ ${esc(b.author)}</div>
+        <div class="card-title">${esc(b.titre)}</div>
+        <div class="card-sub">✍ ${esc(b.auteur)}</div>
+        <div class="card-sub">📂 ${esc(b.categorie || '—')}</div>
         <div class="card-sub">ISBN: ${esc(b.isbn)}</div>
-        <div class="card-sub" style="color:var(--muted)">ID: ${b.id}</div>
+        <div class="card-sub" style="color:${dispoColor}">
+          📦 ${dispo}/${total} disponible${dispo !== 1 ? 's' : ''}
+        </div>
+        ${isGestionnaire() ? `
         <div class="card-actions">
-          <button class="btn btn-danger" onclick="deleteBook(${b.id})">Supprimer</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBook('${b.id}','${esc(b.titre).replace(/'/g,"\\'")}')">Supprimer</button>
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+async function addBook() {
+  if (!isGestionnaire()) { toast('Accès réservé au gestionnaire.', 'error'); return; }
+  const titre              = v('b-title');
+  const auteur             = v('b-author');
+  const isbn               = v('b-isbn');
+  const categorie          = v('b-cat');
+  const nombre_exemplaires = parseInt(v('b-copies')) || 1;
+  if (!titre || !auteur || !isbn) { toast('Titre, auteur et ISBN sont obligatoires.', 'error'); return; }
+  try {
+    await apiCall(`${API.books}/api/livres`, {
+      method: 'POST',
+      body: JSON.stringify({ titre, auteur, isbn, categorie, nombre_exemplaires }),
+    });
+    toast(`"${titre}" ajouté avec succès.`);
+    ['b-title','b-author','b-isbn','b-cat'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('b-copies').value = '1';
+    loadBooks();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function deleteBook(id, titre) {
+  if (!isGestionnaire()) { toast('Accès réservé au gestionnaire.', 'error'); return; }
+  if (!confirm(`Supprimer le livre "${titre}" ? Cette action est irréversible.`)) return;
+  try {
+    await apiCall(`${API.books}/api/livres/${id}`, { method: 'DELETE' });
+    toast('Livre supprimé.');
+    loadBooks();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ══ UTILISATEURS ══
+───────────────────────────────────────────────────────────────────── */
+async function loadUsers() {
+  if (!isGestionnaire()) {
+    toast('Cette section est réservée au gestionnaire.', 'error');
+    navigate('books');
+    return;
+  }
+  const grid = document.getElementById('users-grid');
+  grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+  try {
+    const data = await apiCall(`${API.users}/api/utilisateurs?page=1&limit=500`);
+    allUsers = data.utilisateurs || [];
+    document.getElementById('users-count').textContent =
+      `${data.total} utilisateur${data.total !== 1 ? 's' : ''}`;
+    renderUsers(allUsers);
+  } catch (e) {
+    grid.innerHTML = `<div class="empty">Erreur<br/><small>${esc(e.message)}</small></div>`;
+  }
+}
+
+function applyUserSearch() {
+  const q          = v('u-search').trim();
+  const typeFilter = v('u-type-filter');
+  let users        = allUsers;
+
+  if (typeFilter) users = users.filter(u => u.type_utilisateur === typeFilter);
+
+  if (q) {
+    const ql = q.toLowerCase();
+
+    if (/^u\d+$/i.test(q)) {
+      // Recherche par identifiant model_id : u012, u001…
+      users = users.filter(u => u.model_id?.toLowerCase() === ql);
+
+    } else if (/^[a-zA-ZÀ-ÿ]{2}$/.test(q)) {
+      // Recherche par initiaux : MD → nom[0]=M et prenom[0]=D (ou inversé)
+      const l1 = ql[0], l2 = ql[1];
+      users = users.filter(u => {
+        const n = (u.nom?.[0]   || '').toLowerCase();
+        const p = (u.prenom?.[0] || '').toLowerCase();
+        return (n === l1 && p === l2) || (n === l2 && p === l1);
+      });
+
+    } else {
+      // Recherche générale : nom, prénom, email, model_id
+      users = users.filter(u =>
+        `${u.nom || ''} ${u.prenom || ''}`.toLowerCase().includes(ql) ||
+        (u.email    || '').toLowerCase().includes(ql) ||
+        (u.model_id || '').toLowerCase().includes(ql)
+      );
+    }
+  }
+
+  const suffix = (q || typeFilter) ? ' (filtrés)' : '';
+  document.getElementById('users-count').textContent =
+    `${users.length} utilisateur${users.length !== 1 ? 's' : ''}${suffix}`;
+  renderUsers(users);
+}
+
+function resetUserSearch() {
+  document.getElementById('u-search').value      = '';
+  document.getElementById('u-type-filter').value = '';
+  document.getElementById('users-count').textContent =
+    `${allUsers.length} utilisateur${allUsers.length !== 1 ? 's' : ''}`;
+  renderUsers(allUsers);
+}
+
+function renderUsers(users) {
+  const grid = document.getElementById('users-grid');
+  if (!users.length) {
+    grid.innerHTML = '<div class="empty">Aucun utilisateur trouvé pour ces critères</div>';
+    return;
+  }
+  grid.innerHTML = users.map(u => `
+    <div class="card user">
+      <div class="user-card-header">
+        <div>
+          <div class="card-title">${esc(u.nom)} ${esc(u.prenom)}</div>
+          <div class="card-sub" style="font-size:.63rem;color:var(--muted)">${esc(u.model_id || '—')}</div>
         </div>
+        <span class="badge badge-${u.type_utilisateur}">${esc(u.type_utilisateur)}</span>
       </div>
-    `).join('');
-  }
+      <div class="card-sub">✉ ${esc(u.email)}</div>
+      <div class="card-sub" style="margin-top:.3rem">
+        <span style="color:${u.actif ? 'var(--accent2)' : 'var(--danger)'}">
+          ● ${u.actif ? 'Actif' : 'Inactif'}
+        </span>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-outline btn-sm"
+                onclick="viewUserLoans('${u.id}','${esc(u.nom)} ${esc(u.prenom)}')">
+          Emprunts
+        </button>
+        <button class="btn btn-success btn-sm"
+                onclick="createLoanFor('${u.id}')">
+          + Emprunt
+        </button>
+        <button class="btn btn-danger btn-sm"
+                onclick="deleteUser('${u.id}','${esc(u.nom)} ${esc(u.prenom)}')">
+          Supprimer
+        </button>
+      </div>
+    </div>`).join('');
+}
 
-  async function addBook() {
-    const title = v('b-title'), author = v('b-author'), isbn = v('b-isbn');
-    if (!title || !author || !isbn) { toast('Remplissez tous les champs', 'error'); return; }
-    try {
-      await api(`${API.books}/books`, { method: 'POST', body: JSON.stringify({ title, author, isbn }) });
-      toast(`"${title}" ajouté avec succès`);
-      ['b-title','b-author','b-isbn'].forEach(id => document.getElementById(id).value = '');
-      loadBooks();
-    } catch (e) { toast(e.message, 'error'); }
-  }
+function createLoanFor(userId) {
+  navigate('loans');
+  setTimeout(() => {
+    clearUser(); clearBook();
+    preSelectUser(userId);
+    document.getElementById('ac-book-input')?.focus();
+  }, 80);
+}
 
-  async function deleteBook(id) {
-    if (!confirm('Supprimer ce livre ?')) return;
-    try {
-      await api(`${API.books}/books/${id}`, { method: 'DELETE' });
-      toast('Livre supprimé');
-      loadBooks();
-    } catch (e) { toast(e.message, 'error'); }
-  }
+async function viewUserLoans(userId, userName) {
+  const overlay = document.getElementById('user-panel-overlay');
+  const panel   = document.getElementById('user-side-panel');
+  const body    = document.getElementById('side-panel-body');
 
-  let searchTimer;
-  function searchBooks() {
-    clearTimeout(searchTimer);
-    const q = document.getElementById('b-search').value.trim();
-    if (!q) { loadBooks(); return; }
-    searchTimer = setTimeout(async () => {
-      const grid = document.getElementById('books-grid');
-      grid.innerHTML = '<div class="loader">RECHERCHE…</div>';
-      try {
-        const params = new URLSearchParams();
-        params.set('title', q);
-        const books = await api(`${API.books}/books/search?${params}`);
-        renderBooks(books);
-      } catch (e) { toast(e.message, 'error'); }
-    }, 300);
-  }
+  document.getElementById('side-panel-name').textContent = userName;
+  document.getElementById('side-panel-sub').textContent  = 'Chargement…';
+  body.innerHTML = '<div class="loader">CHARGEMENT…</div>';
 
-  async function loadUsers() {
-    const grid = document.getElementById('users-grid');
-    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
-    try {
-      const users = await api(`${API.users}/users`);
-      document.getElementById('users-count').textContent = `${users.length} utilisateur${users.length !== 1 ? 's' : ''}`;
-      if (!users.length) { grid.innerHTML = '<div class="empty">Aucun utilisateur enregistré</div>'; return; }
-      grid.innerHTML = users.map(u => `
-        <div class="card user">
-          <div class="card-title">${esc(u.full_name)}</div>
-          <div class="card-sub">✉ ${esc(u.email)}</div>
-          <div class="card-sub" style="margin-top:.35rem">
-            <span class="badge badge-${u.user_type?.toLowerCase()}">${esc(u.user_type)}</span>
+  overlay.classList.remove('hidden');
+  requestAnimationFrame(() => panel.classList.add('open'));
+
+  try {
+    const data  = await apiCall(`${API.loans}/api/emprunts/utilisateur/${userId}`);
+    const loans = data.emprunts || [];
+    const active = loans.filter(l => l.statut !== 'retourne');
+    const done   = loans.filter(l => l.statut === 'retourne');
+
+    document.getElementById('side-panel-sub').textContent =
+      `${loans.length} emprunt${loans.length !== 1 ? 's' : ''} au total`;
+
+    if (!loans.length) {
+      body.innerHTML = '<div class="empty" style="padding:2rem">Aucun emprunt pour cet utilisateur</div>';
+      return;
+    }
+
+    body.innerHTML = `
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;font-size:.72rem">
+        <span style="color:var(--loans);font-weight:500">${active.length} actif${active.length !== 1 ? 's' : ''}</span>
+        <span style="color:var(--muted)">·</span>
+        <span style="color:var(--books)">${done.length} retourné${done.length !== 1 ? 's' : ''}</span>
+      </div>
+      ${loans.map(l => {
+        const statut = l.statut || 'en_cours';
+        const cls = statut === 'retourne' ? 'badge-returned' : (statut === 'en_retard' ? 'badge-overdue' : 'badge-borrowed');
+        const lbl = statut === 'retourne' ? 'Retourné' : (statut === 'en_retard' ? 'En retard' : 'En cours');
+        const borderStyle = statut === 'en_retard' ? 'border-left:3px solid var(--danger)' : '';
+        return `
+        <div class="loan-row" style="${borderStyle}">
+          <div class="loan-row-title">
+            ${esc(l.titre || '—')}
+            <span class="badge ${cls}" style="float:right">${lbl}</span>
           </div>
-          <div class="card-sub" style="color:var(--muted)">ID: ${u.id}</div>
-          <div class="card-actions">
-            <button class="btn btn-danger" onclick="deleteUser(${u.id})">Supprimer</button>
+          <div class="loan-row-meta">
+            ✍ ${esc(l.auteur || '—')}${l.categorie ? ' · ' + esc(l.categorie) : ''}<br/>
+            📅 Emprunté : ${new Date(l.date_emprunt).toLocaleDateString('fr-FR')}<br/>
+            ⏰ Retour prévu : ${new Date(l.date_retour_prevue).toLocaleDateString('fr-FR')}
+            ${l.jours_retard > 0
+              ? `<br/><span style="color:var(--danger)">⚠ ${l.jours_retard}j de retard — <strong>${parseInt(l.penalite_fcfa || 0).toLocaleString('fr-FR')} FCFA</strong></span>`
+              : ''}
           </div>
+          ${statut !== 'retourne' && isGestionnaire() ? `
+          <div class="loan-row-actions">
+            <button class="btn btn-success btn-sm"
+                    onclick="returnLoanFromPanel('${l.id}','${userId}','${esc(userName).replace(/'/g,"\\'")}')">
+              ↩ Valider retour
+            </button>
+          </div>` : ''}
+        </div>`;
+      }).join('')}`;
+  } catch (e) {
+    body.innerHTML = `<div class="empty">Erreur : ${esc(e.message)}</div>`;
+  }
+}
+
+function closeSidePanel() {
+  const overlay = document.getElementById('user-panel-overlay');
+  const panel   = document.getElementById('user-side-panel');
+  panel.classList.remove('open');
+  setTimeout(() => overlay.classList.add('hidden'), 300);
+}
+
+async function returnLoanFromPanel(loanId, userId, userName) {
+  if (!isGestionnaire()) { toast('Accès réservé au gestionnaire.', 'error'); return; }
+  if (!confirm('Confirmer le retour de ce livre ?')) return;
+  try {
+    await apiCall(`${API.loans}/api/emprunts/${loanId}/retourner`, { method: 'PATCH' });
+    toast('Retour enregistré avec succès.');
+    viewUserLoans(userId, userName);
+    // Rafraîchir les stats silencieusement
+    apiCall(`${API.loans}/api/emprunts/stats`).then(s => {
+      document.getElementById('ls-cours').textContent     = s.en_cours ?? '—';
+      document.getElementById('ls-retard').textContent    = s.en_retard ?? '—';
+      document.getElementById('ls-retournes').textContent = s.retournes ?? '—';
+      document.getElementById('ls-penalites').textContent = (s.total_penalites_fcfa ?? 0).toLocaleString('fr-FR');
+    }).catch(() => {});
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function deleteUser(id, name) {
+  if (!isGestionnaire()) { toast('Accès réservé au gestionnaire.', 'error'); return; }
+  if (!confirm(`Supprimer l'utilisateur "${name}" ? Cette action est irréversible.`)) return;
+  try {
+    await apiCall(`${API.users}/api/utilisateurs/${id}`, { method: 'DELETE' });
+    toast(`${name} supprimé(e).`);
+    loadUsers();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ══ EMPRUNTS ══
+───────────────────────────────────────────────────────────────────── */
+async function loadLoans() {
+  const grid = document.getElementById('loans-grid');
+  grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+
+  if (isGestionnaire()) {
+    setDisplay('loans-stats-bar', true);
+    // Détecter les retards silencieusement
+    apiCall(`${API.loans}/api/emprunts/detecter-retards`, { method: 'POST' }).catch(() => {});
+    // Charger les stats
+    apiCall(`${API.loans}/api/emprunts/stats`).then(s => {
+      document.getElementById('ls-cours').textContent     = s.en_cours ?? '—';
+      document.getElementById('ls-retard').textContent    = s.en_retard ?? '—';
+      document.getElementById('ls-retournes').textContent = s.retournes ?? '—';
+      document.getElementById('ls-penalites').textContent = (s.total_penalites_fcfa ?? 0).toLocaleString('fr-FR');
+    }).catch(() => {});
+  } else {
+    setDisplay('loans-stats-bar', false);
+  }
+
+  try {
+    const data  = await apiCall(`${API.loans}/api/emprunts?page=1&limit=100&statut=en_cours`);
+    const loans = data.emprunts || [];
+    document.getElementById('loans-count').textContent =
+      `${data.total} emprunt${data.total !== 1 ? 's' : ''} en cours`;
+    renderLoans(loans);
+  } catch (e) {
+    grid.innerHTML = `<div class="empty">Erreur<br/><small>${esc(e.message)}</small></div>`;
+  }
+}
+
+async function loadOverdue() {
+  const grid = document.getElementById('loans-grid');
+  grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+  try {
+    const data  = await apiCall(`${API.loans}/api/emprunts/penalites`);
+    const loans = data.retards || [];
+    document.getElementById('loans-count').textContent =
+      `${data.total} retard${data.total !== 1 ? 's' : ''} · ${data.total_penalites_fcfa} FCFA`;
+    renderLoans(loans, true);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function loadHistory() {
+  const grid = document.getElementById('loans-grid');
+  grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+  try {
+    const data  = await apiCall(`${API.loans}/api/emprunts?page=1&limit=200`);
+    const loans = data.emprunts || [];
+    document.getElementById('loans-count').textContent = `${data.total} au total`;
+    renderLoans(loans);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function loadMyLoans() {
+  if (!auth) { openModal(); return; }
+  const grid = document.getElementById('loans-grid');
+  grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
+  try {
+    const data  = await apiCall(`${API.loans}/api/emprunts/utilisateur/${auth.user.id}`);
+    const loans = data.emprunts || [];
+    document.getElementById('loans-count').textContent =
+      `${loans.length} emprunt${loans.length !== 1 ? 's' : ''} (mes emprunts)`;
+    renderLoans(loans);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function renderLoans(loans, overdue = false) {
+  const grid = document.getElementById('loans-grid');
+  if (!loans.length) { grid.innerHTML = '<div class="empty">Aucun emprunt trouvé</div>'; return; }
+
+  grid.innerHTML = loans.map(l => {
+    const statut = l.statut || 'en_cours';
+    const statusClass = statut === 'retourne'
+      ? 'badge-returned'
+      : (statut === 'en_retard' || overdue ? 'badge-overdue' : 'badge-borrowed');
+    const statusLabel = statut === 'retourne' ? 'Retourné'
+      : (statut === 'en_retard' ? 'En retard' : 'En cours');
+
+    const dateEmprunt    = l.date_emprunt       ? new Date(l.date_emprunt).toLocaleDateString('fr-FR')       : '—';
+    const datePrevue     = l.date_retour_prevue ? new Date(l.date_retour_prevue).toLocaleDateString('fr-FR') : '—';
+    const nomUser        = (l.nom && l.prenom) ? `${l.prenom} ${l.nom}` : (l.utilisateur_id || '—');
+    const titreBook      = l.titre || `Livre ${(l.livre_id||'').substring(0,8)}…`;
+
+    return `
+      <div class="card loan">
+        <div class="card-title" style="font-size:.88rem">${esc(titreBook)}</div>
+        <div class="card-sub">✍ ${esc(l.auteur || '—')}</div>
+        <div class="card-sub">👤 ${esc(nomUser)}</div>
+        <div class="card-sub">📅 Emprunté : ${dateEmprunt}</div>
+        <div class="card-sub">⏰ Retour prévu : ${datePrevue}</div>
+        ${l.jours_retard > 0 ? `
+        <div class="card-sub" style="color:var(--danger)">
+          ⚠ ${l.jours_retard}j de retard · <strong>${l.penalite_fcfa} FCFA</strong>
+        </div>` : ''}
+        <div style="margin-top:.75rem"><span class="badge ${statusClass}">${statusLabel}</span></div>
+        ${statut !== 'retourne' && isGestionnaire() ? `
+        <div class="card-actions">
+          <button class="btn btn-success btn-sm" onclick="returnLoan('${l.id}')">↩ Valider retour</button>
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+async function addLoan() {
+  if (!isGestionnaire()) { toast('Seul le gestionnaire peut valider des emprunts.', 'error'); return; }
+  if (!selectedUserId) { toast('Sélectionnez un utilisateur.', 'error'); document.getElementById('ac-user-input').focus(); return; }
+  if (!selectedBookId) { toast('Sélectionnez un livre.', 'error'); document.getElementById('ac-book-input').focus(); return; }
+  try {
+    await apiCall(`${API.loans}/api/emprunts`, {
+      method: 'POST',
+      body: JSON.stringify({ utilisateur_id: selectedUserId, livre_id: selectedBookId }),
+    });
+    toast('Emprunt validé avec succès.');
+    clearUser(); clearBook();
+    loadLoans();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function returnLoan(id) {
+  if (!isGestionnaire()) { toast('Seul le gestionnaire peut valider les retours.', 'error'); return; }
+  if (!confirm('Confirmer le retour de ce livre ?')) return;
+  try {
+    await apiCall(`${API.loans}/api/emprunts/${id}/retourner`, { method: 'PATCH' });
+    toast('Retour enregistré avec succès.');
+    if (currentSection === 'loans') loadLoans();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ══ RECOMMANDATIONS ══
+───────────────────────────────────────────────────────────────────── */
+async function getRecos() {
+  if (!auth) { openModal(); return; }
+
+  const list = document.getElementById('reco-list');
+  list.innerHTML = '<div class="loader">ANALYSE DE VOTRE HISTORIQUE…</div>';
+
+  try {
+    // Charger l'historique complet de l'utilisateur
+    const loanData = await apiCall(`${API.loans}/api/emprunts/utilisateur/${auth.user.id}`);
+    const loans    = loanData.emprunts || [];
+    const loanCount = loans.length;
+    const MIN_LOANS = 5;
+
+    // Analyser les catégories préférées
+    const catCounts = {};
+    loans.forEach(l => { if (l.categorie) catCounts[l.categorie] = (catCounts[l.categorie] || 0) + 1; });
+    const topCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([c]) => c);
+
+    // Auteurs les plus lus
+    const auteurCounts = {};
+    loans.forEach(l => { if (l.auteur) auteurCounts[l.auteur] = (auteurCounts[l.auteur] || 0) + 1; });
+    const topAuteurs = Object.entries(auteurCounts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([a]) => a);
+
+    const historyBlock = loanCount > 0 ? `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:1.5rem">
+        <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.6rem">
+          Votre profil de lecture
         </div>
-      `).join('');
-    } catch (e) {
-      grid.innerHTML = `<div class="empty">Impossible de joindre users-service<br/><small>${e.message}</small></div>`;
-    }
-  }
-
-  async function addUser() {
-    const full_name = v('u-name'), email = v('u-email'), user_type = v('u-type');
-    if (!full_name || !email) { toast('Remplissez les champs obligatoires', 'error'); return; }
-    try {
-      await api(`${API.users}/users`, { method: 'POST', body: JSON.stringify({ full_name, email, user_type }) });
-      toast(`${full_name} créé(e) avec succès`);
-      ['u-name','u-email'].forEach(id => document.getElementById(id).value = '');
-      loadUsers();
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  async function deleteUser(id) {
-    if (!confirm('Supprimer cet utilisateur ?')) return;
-    try {
-      await api(`${API.users}/users/${id}`, { method: 'DELETE' });
-      toast('Utilisateur supprimé');
-      loadUsers();
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  async function loadLoans() {
-    const grid = document.getElementById('loans-grid');
-    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
-    try {
-      const loans = await api(`${API.loans}/loans`);
-      document.getElementById('loans-count').textContent = `${loans.length} emprunt${loans.length !== 1 ? 's' : ''}`;
-      renderLoans(loans);
-    } catch (e) {
-      grid.innerHTML = `<div class="empty">Impossible de joindre loans-service<br/><small>${e.message}</small></div>`;
-    }
-  }
-
-  async function loadOverdue() {
-    const grid = document.getElementById('loans-grid');
-    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
-    try {
-      const loans = await api(`${API.loans}/loans/overdue`);
-      document.getElementById('loans-count').textContent = `${loans.length} retard${loans.length !== 1 ? 's' : ''}`;
-      renderLoans(loans, true);
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  async function loadHistory() {
-    const grid = document.getElementById('loans-grid');
-    grid.innerHTML = '<div class="loader">CHARGEMENT…</div>';
-    try {
-      const loans = await api(`${API.loans}/loans/history`);
-      document.getElementById('loans-count').textContent = `${loans.length} au total`;
-      renderLoans(loans);
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  function renderLoans(loans, overdue = false) {
-    const grid = document.getElementById('loans-grid');
-    if (!loans.length) { grid.innerHTML = '<div class="empty">Aucun emprunt trouvé</div>'; return; }
-    grid.innerHTML = loans.map(l => {
-      const statusClass = overdue ? 'badge-overdue' : (l.status === 'returned' ? 'badge-returned' : 'badge-borrowed');
-      const statusLabel = overdue ? 'EN RETARD' : (l.status || 'borrowed');
-      const date = l.loan_date ? new Date(l.loan_date).toLocaleDateString('fr-FR') : '—';
-      const returnDate = l.return_date ? new Date(l.return_date).toLocaleDateString('fr-FR') : '—';
-      return `
-        <div class="card loan">
-          <div class="card-title">Emprunt #${l.id}</div>
-          <div class="card-sub">👤 Utilisateur: ${l.user_id}</div>
-          <div class="card-sub">📖 Livre: ${l.book_id}</div>
-          <div class="card-sub">📅 Emprunté: ${date}</div>
-          ${l.return_date ? `<div class="card-sub">OK! Retourné: ${returnDate}</div>` : ''}
-          <div style="margin-top:.75rem">
-            <span class="badge ${statusClass}">${statusLabel}</span>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.75rem">
+          <div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--accent)">${loanCount}</div>
+            <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Emprunts</div>
           </div>
-          ${l.status !== 'returned' ? `
-          <div class="card-actions">
-            <button class="btn btn-success" onclick="returnLoan(${l.id})">Retourner</button>
-            <button class="btn btn-danger" onclick="deleteLoan(${l.id})">Supprimer</button>
+          ${topCats.length ? `<div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--books)">${topCats.length}</div>
+            <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Catégories</div>
           </div>` : ''}
         </div>
-      `;
-    }).join('');
-  }
+        ${topCats.length ? `
+        <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem">Domaines préférés</div>
+        <div class="history-tags">${topCats.map(c => `<span class="history-tag">${esc(c)}</span>`).join('')}</div>` : ''}
+        ${topAuteurs.length ? `
+        <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem">Auteurs lus</div>
+        <div style="font-size:.72rem;color:var(--text)">${topAuteurs.map(a => esc(a)).join(' · ')}</div>` : ''}
+      </div>` : '';
 
-  async function addLoan() {
-    const user_id = parseInt(v('l-userid')), book_id = parseInt(v('l-bookid'));
-    if (!user_id || !book_id) { toast('Entrez un ID utilisateur et un ID livre', 'error'); return; }
-    try {
-      await api(`${API.loans}/loans`, { method: 'POST', body: JSON.stringify({ user_id, book_id }) });
-      toast(`Emprunt créé — Livre ${book_id} → Utilisateur ${user_id}`);
-      ['l-userid','l-bookid'].forEach(id => document.getElementById(id).value = '');
-      loadLoans();
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  async function returnLoan(id) {
-    try {
-      await api(`${API.loans}/loans/${id}/return`, { method: 'PUT' });
-      toast(`Emprunt #${id} retourné`);
-      loadLoans();
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  async function deleteLoan(id) {
-    if (!confirm('Supprimer cet emprunt ?')) return;
-    try {
-      await api(`${API.loans}/loans/${id}`, { method: 'DELETE' });
-      toast('Emprunt supprimé');
-      loadLoans();
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  async function getRecos() {
-    const user_id = v('r-userid');
-    if (!user_id) { toast('Entrez un ID utilisateur', 'error'); return; }
-    const list = document.getElementById('reco-list');
-    list.innerHTML = '<div class="loader">ANALYSE EN COURS…</div>';
-    try {
-      const data = await api(`${API.reco}/recommendations/${user_id}`);
-      const recos = data.recommendations || [];
-      if (!recos.length) { list.innerHTML = '<div class="empty">Aucune recommandation disponible</div>'; return; }
+    if (loanCount < MIN_LOANS) {
+      const pct = Math.round((loanCount / MIN_LOANS) * 100);
       list.innerHTML = `
-        <p style="font-size:.72rem;color:var(--muted);margin-bottom:1rem;letter-spacing:.04em;">
-          RECOMMANDATIONS POUR L'UTILISATEUR #${user_id}
-        </p>
-        ${recos.map((r, i) => `
-          <div class="reco-card">
-            <div class="reco-rank">${i + 1}</div>
-            <div>
-              <div style="font-size:.85rem;font-weight:500">Livre #${r.book_id}</div>
-              <div style="font-size:.7rem;color:var(--muted)">book_id: ${r.book_id}</div>
-            </div>
-            <div class="reco-score">score: ${(r.score * 100).toFixed(0)}%</div>
+        ${historyBlock}
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center">
+          <div style="font-size:2rem;margin-bottom:.75rem">📚</div>
+          <div style="font-size:.92rem;font-weight:500;margin-bottom:.5rem;color:var(--text)">
+            Recommandations personnalisées non disponibles
           </div>
-        `).join('')}
-      `;
-    } catch (e) { list.innerHTML = `<div class="empty">${e.message}</div>`; toast(e.message, 'error'); }
-  }
-
-  async function trainModel() {
-    const btn = event.target;
-    btn.disabled = true;
-    btn.textContent = '⚙ Entraînement en cours…';
-    try {
-      const data = await api(`${API.reco}/train`, { method: 'POST' });
-      toast(data.message || 'Modèle réentraîné avec succès');
-    } catch (e) { toast(e.message, 'error'); }
-    finally {
-      btn.disabled = false;
-      btn.textContent = '⚙ Réentraîner le modèle';
+          <div style="color:var(--muted);font-size:.78rem;line-height:1.7;margin-bottom:1.25rem">
+            Vous avez effectué <strong style="color:var(--accent)">${loanCount}</strong> emprunt${loanCount !== 1 ? 's' : ''}
+            sur les <strong style="color:var(--text)">${MIN_LOANS} minimum</strong> requis.<br/>
+            Empruntez encore <strong style="color:var(--accent2)">${MIN_LOANS - loanCount}</strong>
+            livre${(MIN_LOANS - loanCount) !== 1 ? 's' : ''} pour débloquer vos recommandations.
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius);padding:.85rem 1rem">
+            <div style="font-size:.62rem;color:var(--muted);margin-bottom:.45rem;text-transform:uppercase;letter-spacing:.08em">Progression</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${pct}%"></div>
+            </div>
+            <div style="font-size:.65rem;color:var(--muted);margin-top:.4rem">${loanCount} / ${MIN_LOANS} emprunts</div>
+          </div>
+        </div>`;
+      return;
     }
+
+    list.innerHTML = historyBlock + '<div class="loader">CALCUL DES RECOMMANDATIONS…</div>';
+
+    const data  = await apiCall(`${API.reco}/api/recommendations/${auth.user.id}?top_k=10`);
+    const recos = data.recommandations || [];
+
+    if (!recos.length) {
+      list.innerHTML = historyBlock + '<div class="empty">Aucune recommandation disponible pour le moment.</div>';
+      return;
+    }
+
+    const algo = data.model_id ? 'SVD · basées sur vos habitudes' : 'Basées sur vos catégories préférées';
+
+    list.innerHTML = `
+      ${historyBlock}
+      <p style="font-size:.65rem;color:var(--muted);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.08em">
+        ${recos.length} recommandation${recos.length !== 1 ? 's' : ''} · ${algo}
+      </p>
+      ${recos.map((r, i) => {
+        const dispo = r.exemplaires_disponibles ?? 0;
+        const dispoColor = dispo > 0 ? 'var(--accent2)' : 'var(--danger)';
+        return `
+        <div class="reco-card">
+          <div class="reco-rank">${i + 1}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.85rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              ${esc(r.titre || `Livre ${r.book_id}`)}
+            </div>
+            <div style="font-size:.7rem;color:var(--muted)">
+              ${esc(r.auteur || '')}${r.categorie ? ' · ' + esc(r.categorie) : ''}
+            </div>
+            <div style="font-size:.65rem;margin-top:.2rem;color:${dispoColor}">
+              ${dispo > 0 ? `${dispo} exemplaire${dispo !== 1 ? 's' : ''} disponible${dispo !== 1 ? 's' : ''}` : 'Indisponible'}
+            </div>
+          </div>
+          <div class="reco-score">score : ${(r.score || 0).toFixed(2)}</div>
+        </div>`;
+      }).join('')}`;
+
+  } catch (e) {
+    list.innerHTML = `<div class="empty">${esc(e.message)}</div>`;
+    toast(e.message, 'error');
+  }
+}
+
+async function trainModel() {
+  if (!isGestionnaire()) { toast('Accès réservé au gestionnaire.', 'error'); return; }
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = '⚙ Entraînement en cours…';
+  try {
+    const data = await apiCall(`${API.reco}/api/train`, { method: 'POST' });
+    toast(data.message || 'Modèle réentraîné avec succès.');
+  } catch (e) { toast(e.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = '⚙ Réentraîner le modèle'; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ══ TABLEAU DE BORD ══
+───────────────────────────────────────────────────────────────────── */
+async function loadDashboard() {
+  if (!isGestionnaire()) { navigate('books'); return; }
+
+  document.getElementById('dash-updated').textContent =
+    `Actualisé à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+
+  document.getElementById('dash-overdue-list').innerHTML = '<div class="loader">CHARGEMENT…</div>';
+  document.getElementById('dash-recent-list').innerHTML  = '<div class="loader">CHARGEMENT…</div>';
+
+  const [loanStats, penalites, livresData, recentLoans] = await Promise.allSettled([
+    apiCall(`${API.loans}/api/emprunts/stats`),
+    apiCall(`${API.loans}/api/emprunts/penalites`),
+    apiCall(`${API.books}/api/livres?page=1&limit=500`),
+    apiCall(`${API.loans}/api/emprunts?page=1&limit=10`),
+  ]);
+
+  if (livresData.status === 'fulfilled') {
+    const livres        = livresData.value.livres || [];
+    const totalDispo    = livres.reduce((s, b) => s + (b.exemplaires_disponibles ?? 0), 0);
+    const totalExempl   = livres.reduce((s, b) => s + (b.nombre_exemplaires ?? b.exemplaires_disponibles ?? 0), 0);
+    document.getElementById('kpi-dispo').textContent     = totalDispo;
+    document.getElementById('kpi-dispo-sub').textContent = `sur ${totalExempl} exemplaires · ${livres.length} titres`;
   }
 
-  const v  = id => document.getElementById(id)?.value?.trim() ?? '';
-  const esc = s  => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  if (loanStats.status === 'fulfilled') {
+    const s = loanStats.value;
+    document.getElementById('kpi-cours').textContent      = s.en_cours ?? '—';
+    document.getElementById('kpi-cours-sub').textContent  = `${s.total ?? '—'} emprunts au total`;
+    document.getElementById('kpi-retard').textContent     = s.en_retard ?? '—';
+    document.getElementById('kpi-retard-sub').textContent = `${s.retournes ?? '—'} retours effectués`;
+    document.getElementById('kpi-penalites').textContent  = parseInt(s.total_penalites_fcfa || 0).toLocaleString('fr-FR');
+    // Sync avec la barre des emprunts
+    document.getElementById('ls-cours').textContent     = s.en_cours ?? '—';
+    document.getElementById('ls-retard').textContent    = s.en_retard ?? '—';
+    document.getElementById('ls-retournes').textContent = s.retournes ?? '—';
+    document.getElementById('ls-penalites').textContent = parseInt(s.total_penalites_fcfa || 0).toLocaleString('fr-FR');
+  }
 
+  if (penalites.status === 'fulfilled') {
+    const p = penalites.value;
+    if (loanStats.status !== 'fulfilled')
+      document.getElementById('kpi-penalites').textContent = parseInt(p.total_penalites_fcfa || 0).toLocaleString('fr-FR');
+    renderDashOverdue(p.retards || []);
+  } else {
+    document.getElementById('dash-overdue-list').innerHTML = '<div class="empty" style="padding:1.5rem">Aucun retard en cours ✓</div>';
+  }
+
+  if (recentLoans.status === 'fulfilled') {
+    renderDashRecent(recentLoans.value.emprunts || []);
+  } else {
+    document.getElementById('dash-recent-list').innerHTML = '<div class="empty" style="padding:1.5rem">—</div>';
+  }
+}
+
+function renderDashOverdue(retards) {
+  const el = document.getElementById('dash-overdue-list');
+  if (!retards.length) {
+    el.innerHTML = '<div class="empty" style="padding:1.5rem;color:var(--books)">Aucun livre en retard ✓</div>';
+    return;
+  }
+  el.innerHTML = retards.slice(0, 15).map(l => `
+    <div class="loan-row" style="border-left:3px solid var(--danger)">
+      <div class="loan-row-title">${esc(l.titre)}</div>
+      <div class="loan-row-meta">
+        👤 <strong>${esc(l.prenom)} ${esc(l.nom)}</strong> · ${esc(l.email || '')}<br/>
+        ⚠ <span style="color:var(--danger)">${l.jours_retard}j de retard</span> ·
+        <strong style="color:var(--danger)">${parseInt(l.penalite_fcfa || 0).toLocaleString('fr-FR')} FCFA</strong><br/>
+        Retour prévu : ${new Date(l.date_retour_prevue).toLocaleDateString('fr-FR')}
+      </div>
+      <div class="loan-row-actions">
+        <button class="btn btn-success btn-sm" onclick="returnLoan('${l.id}').then(()=>loadDashboard())">↩ Valider retour</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderDashRecent(loans) {
+  const el = document.getElementById('dash-recent-list');
+  if (!loans.length) {
+    el.innerHTML = '<div class="empty" style="padding:1.5rem">Aucun emprunt récent</div>';
+    return;
+  }
+  el.innerHTML = loans.map(l => {
+    const statut = l.statut || 'en_cours';
+    const cls = statut === 'retourne' ? 'badge-returned' : (statut === 'en_retard' ? 'badge-overdue' : 'badge-borrowed');
+    const lbl = statut === 'retourne' ? 'Retourné' : (statut === 'en_retard' ? 'En retard' : 'En cours');
+    return `
+    <div class="loan-row">
+      <div class="loan-row-title">
+        ${esc(l.titre)}
+        <span class="badge ${cls}" style="float:right">${lbl}</span>
+      </div>
+      <div class="loan-row-meta">
+        👤 ${esc(l.prenom)} ${esc(l.nom)} · 📅 ${new Date(l.date_emprunt).toLocaleDateString('fr-FR')}
+        ${l.jours_retard > 0 ? `<br/><span style="color:var(--danger)">⚠ ${l.jours_retard}j · ${parseInt(l.penalite_fcfa||0).toLocaleString('fr-FR')} FCFA</span>` : ''}
+      </div>
+      ${statut !== 'retourne' ? `
+      <div class="loan-row-actions">
+        <button class="btn btn-success btn-sm" onclick="returnLoan('${l.id}').then(()=>loadDashboard())">↩ Valider retour</button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ══ AUTOCOMPLETE EMPRUNT ══
+───────────────────────────────────────────────────────────────────── */
+let selectedUserId = null;
+let selectedBookId = null;
+
+// Fermer les dropdowns quand on clique ailleurs
+document.addEventListener('click', e => {
+  if (!e.target.closest('#ac-user-input') && !e.target.closest('#ac-user-list'))
+    document.getElementById('ac-user-list')?.classList.add('hidden');
+  if (!e.target.closest('#ac-book-input') && !e.target.closest('#ac-book-list'))
+    document.getElementById('ac-book-list')?.classList.add('hidden');
+});
+
+// ── Utilisateur ──────────────────────────────────────────────────────
+function filterUsersAC(q) {
+  if (selectedUserId) return;                          // déjà sélectionné
+  const dropdown = document.getElementById('ac-user-list');
+  if (!dropdown) return;
+
+  // Charger les utilisateurs si nécessaire
+  if (!allUsers.length) {
+    loadUsersForAC().then(() => filterUsersAC(q));
+    return;
+  }
+
+  const ql = q.trim().toLowerCase();
+  let results;
+
+  if (!ql) {
+    results = allUsers.slice(0, 10);
+  } else if (/^u\d+$/i.test(q.trim())) {
+    results = allUsers.filter(u => (u.model_id || '').toLowerCase().includes(ql));
+  } else {
+    results = allUsers.filter(u =>
+      `${u.nom} ${u.prenom}`.toLowerCase().includes(ql) ||
+      `${u.prenom} ${u.nom}`.toLowerCase().includes(ql) ||
+      (u.model_id || '').toLowerCase().includes(ql) ||
+      (u.email   || '').toLowerCase().includes(ql)
+    ).slice(0, 12);
+  }
+
+  dropdown.innerHTML = results.length
+    ? results.map(u => `
+        <div class="ac-item" onclick="selectUser('${u.id}')">
+          <span class="ac-item-label">${esc(u.prenom)} ${esc(u.nom)}</span>
+          <span class="ac-item-meta">${esc(u.model_id || '—')} · ${esc(u.type_utilisateur)}</span>
+        </div>`).join('')
+    : '<div class="ac-empty">Aucun utilisateur trouvé</div>';
+
+  dropdown.classList.remove('hidden');
+}
+
+function selectUser(id) {
+  const u = allUsers.find(u => u.id === id);
+  if (!u) return;
+  selectedUserId = id;
+  document.getElementById('ac-user-input').value = '';
+  document.getElementById('ac-user-list').classList.add('hidden');
+  const sel = document.getElementById('ac-user-selected');
+  sel.innerHTML = `
+    <span class="ac-selected-name">${esc(u.prenom)} ${esc(u.nom)}</span>
+    <span class="ac-selected-meta">${esc(u.model_id || '—')} · ${esc(u.type_utilisateur)}</span>
+    <button class="ac-clear" onclick="clearUser()" title="Changer">✕</button>`;
+  sel.classList.remove('hidden');
+}
+
+function clearUser() {
+  selectedUserId = null;
+  const sel = document.getElementById('ac-user-selected');
+  if (sel) { sel.classList.add('hidden'); sel.innerHTML = ''; }
+  const inp = document.getElementById('ac-user-input');
+  if (inp) { inp.value = ''; inp.focus(); }
+}
+
+// Pré-remplir depuis la liste utilisateurs (bouton "Voir emprunts")
+function preSelectUser(userId) {
+  if (!allUsers.length) { loadUsersForAC().then(() => preSelectUser(userId)); return; }
+  selectUser(userId);
+}
+
+// Charger les utilisateurs silencieusement (pour l'AC dans la section Emprunts)
+async function loadUsersForAC() {
+  try {
+    const data = await apiCall(`${API.users}/api/utilisateurs?page=1&limit=500`);
+    allUsers = data.utilisateurs || [];
+  } catch (_) {}
+}
+
+// ── Livre ────────────────────────────────────────────────────────────
+function filterBooksAC(q) {
+  if (selectedBookId) return;
+  const dropdown = document.getElementById('ac-book-list');
+  if (!dropdown) return;
+
+  if (!allBooks.length) {
+    loadBooks().then(() => filterBooksAC(q));
+    return;
+  }
+
+  const ql = q.trim().toLowerCase();
+  let results;
+
+  if (!ql) {
+    results = allBooks.filter(b => (b.exemplaires_disponibles ?? 0) > 0).slice(0, 10);
+  } else {
+    results = allBooks.filter(b =>
+      (b.titre    || '').toLowerCase().includes(ql) ||
+      (b.auteur   || '').toLowerCase().includes(ql) ||
+      (b.categorie|| '').toLowerCase().includes(ql) ||
+      (b.isbn     || '').toLowerCase().includes(ql)
+    ).slice(0, 12);
+  }
+
+  dropdown.innerHTML = results.length
+    ? results.map(b => {
+        const dispo = b.exemplaires_disponibles ?? 0;
+        const dispoColor = dispo > 0 ? 'var(--accent2)' : 'var(--danger)';
+        return `
+          <div class="ac-item" onclick="selectBook('${b.id}')"
+               style="${dispo === 0 ? 'opacity:.5;pointer-events:none' : ''}">
+            <span class="ac-item-label">${esc(b.titre)}</span>
+            <span class="ac-item-meta">
+              ${esc(b.auteur)} ·
+              <span style="color:${dispoColor}">${dispo} dispo.</span>
+            </span>
+          </div>`;
+      }).join('')
+    : '<div class="ac-empty">Aucun livre trouvé</div>';
+
+  dropdown.classList.remove('hidden');
+}
+
+function selectBook(id) {
+  const b = allBooks.find(b => b.id === id);
+  if (!b) return;
+  selectedBookId = id;
+  document.getElementById('ac-book-input').value = '';
+  document.getElementById('ac-book-list').classList.add('hidden');
+  const dispo = b.exemplaires_disponibles ?? 0;
+  const sel = document.getElementById('ac-book-selected');
+  sel.innerHTML = `
+    <span class="ac-selected-name">${esc(b.titre)}</span>
+    <span class="ac-selected-meta">${esc(b.auteur)} · ${esc(b.categorie || '')} · ${dispo} dispo.</span>
+    <button class="ac-clear" onclick="clearBook()" title="Changer">✕</button>`;
+  sel.classList.remove('hidden');
+}
+
+function clearBook() {
+  selectedBookId = null;
+  const sel = document.getElementById('ac-book-selected');
+  if (sel) { sel.classList.add('hidden'); sel.innerHTML = ''; }
+  const inp = document.getElementById('ac-book-input');
+  if (inp) { inp.value = ''; inp.focus(); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ══ INSCRIPTION UTILISATEUR (gestionnaire) ══
+───────────────────────────────────────────────────────────────────── */
+async function registerUser() {
+  if (!isGestionnaire()) { toast('Accès réservé au gestionnaire.', 'error'); return; }
+  const nom              = v('u-nom');
+  const prenom           = v('u-prenom');
+  const email            = v('u-email');
+  const mot_de_passe     = v('u-password');
+  const type_utilisateur = v('u-role');
+  if (!nom || !prenom || !email || !mot_de_passe) {
+    toast('Tous les champs sont obligatoires.', 'error'); return;
+  }
+  try {
+    const data = await apiCall(`${API.users}/api/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify({ nom, prenom, email, mot_de_passe, type_utilisateur }),
+    });
+    const mid = data.model_id ? ` [${data.model_id}]` : '';
+    toast(`${prenom} ${nom}${mid} inscrit(e) avec succès.`);
+    ['u-nom','u-prenom','u-email','u-password'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('u-role').value = 'etudiant';
+    loadUsers();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────
+   UTILITAIRES
+───────────────────────────────────────────────────────────────────── */
+const v   = id => document.getElementById(id)?.value?.trim() ?? '';
+const esc = s  => String(s ?? '').replace(/[&<>"']/g,
+  c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+/* ─────────────────────────────────────────────────────────────────────
+   INITIALISATION
+───────────────────────────────────────────────────────────────────── */
+(function init() {
+  // Restaurer la session si disponible
+  try {
+    const saved = localStorage.getItem('dit_auth');
+    if (saved) auth = JSON.parse(saved);
+  } catch (_) { auth = null; }
+  updateAuthUI();
   loadBooks();
+})();
 </script>
 </body>
 </html>

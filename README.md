@@ -2,15 +2,14 @@
 
 <img src="https://github.com/AlouKadafi/dit-bibliotheque/blob/main/docs/Images/LogoDIT.png" width="120"/>
 
-# 📚 Bibliothèque Numérique DIT
+# Bibliothèque Numérique DIT
 
 ### Plateforme de gestion de bibliothèque intelligente — Master 2 IA · DIT Sénégal
 
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.11-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![DVC](https://img.shields.io/badge/DVC-Pipeline_ML-945DD6?style=flat-square&logo=dvc&logoColor=white)](https://dvc.org/)
 [![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=flat-square&logo=jenkins&logoColor=white)](https://www.jenkins.io/)
 [![License](https://img.shields.io/badge/Licence-MIT-green?style=flat-square)](LICENSE)
@@ -19,551 +18,874 @@
 
 ---
 
-## 📋 Table des matières
+## Table des matières
 
-- [🎯 Vue d'ensemble](#-vue-densemble)
-- [🏗️ Architecture microservices](#️-architecture-microservices)
-- [✨ Fonctionnalités](#-fonctionnalités)
-- [🛠️ Stack technique](#️-stack-technique)
-- [🚀 Démarrage rapide](#-démarrage-rapide)
-- [🔌 Services & Ports](#-services--ports)
-- [📡 API Reference](#-api-reference)
-- [👤 Comptes de démonstration](#-comptes-de-démonstration)
-- [📊 Pipeline ML avec DVC](#-pipeline-ml-avec-dvc)
-- [🔁 CI/CD avec Jenkins](#-cicd-avec-jenkins)
-- [🗂️ Structure du projet](#️-structure-du-projet)
-- [📐 Règles métier](#-règles-métier)
+- [Vue d'ensemble](#vue-densemble)
+- [Architecture microservices](#architecture-microservices)
+- [Fonctionnalités](#fonctionnalités)
+- [Stack technique](#stack-technique)
+- [Installation et lancement avec Docker Compose](#installation-et-lancement-avec-docker-compose)
+- [Initialisation de la base de données](#initialisation-de-la-base-de-données)
+- [Entraînement et reproduction du modèle avec DVC](#entraînement-et-reproduction-du-modèle-avec-dvc)
+- [Tests des endpoints](#tests-des-endpoints)
+- [Services et ports](#services-et-ports)
+- [API Reference](#api-reference)
+- [Comptes de démonstration](#comptes-de-démonstration)
+- [Règles métier](#règles-métier)
+- [CI/CD avec Jenkins](#cicd-avec-jenkins)
+- [Structure du projet](#structure-du-projet)
+- [Schéma de base de données](#schéma-de-base-de-données)
+- [Équipe](#équipe)
 
 ---
 
-## 🎯 Vue d'ensemble
+## Vue d'ensemble
 
 La **Bibliothèque Numérique DIT** est une plateforme complète de gestion de bibliothèque universitaire construite sur une architecture **microservices**. Elle offre :
 
-- 📖 Catalogue de **150+ livres** techniques (IA, Data Science, DevOps, etc.)
-- 👥 Gestion des **utilisateurs** avec authentification JWT
-- 📋 Système d'**emprunts** avec calcul automatique des pénalités
-- 🤖 **Recommandations personnalisées** par algorithme SVD (Machine Learning)
-- 📊 **Tableau de bord** administrateur complet
-- ⚙️ **Pipeline ML** versionné avec DVC
-- 🔄 **CI/CD** automatisé avec Jenkins
+- Catalogue de **150+ livres** techniques (IA, Data Science, DevOps, etc.)
+- Gestion des **utilisateurs** avec authentification JWT
+- Système d'**emprunts** avec calcul automatique des pénalités
+- **Recommandations personnalisées** par algorithme SVD (Machine Learning)
+- **Tableau de bord** gestionnaire avec KPIs en temps réel
+- **Pipeline ML** versionné avec DVC
+- **CI/CD** automatisé avec Jenkins
 
 ---
 
-## 🏗️ Architecture microservices
+## Architecture microservices
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        NAVIGATEUR CLIENT                            │
-│                    http://localhost:3000                            │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │ HTTP / REST
-                            ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                     FRONTEND  (React 18)                            │
-│                  Container : bibliotheque_frontend                  │
-│                        Port 3000                                    │
-└──────┬──────────────┬──────────────┬───────────────┬───────────────┘
-       │              │              │               │
-       ▼              ▼              ▼               ▼
-  ┌─────────┐   ┌──────────┐  ┌──────────┐   ┌──────────────┐
-  │ service │   │ service  │  │ service  │   │   service    │
-  │ livres  │   │utilisat. │  │emprunts  │   │recommandation│
-  │  :3001  │   │  :3002   │  │  :3003   │   │    :3004     │
-  │ Node.js │   │ Node.js  │  │ Node.js  │   │   FastAPI    │
-  └────┬────┘   └────┬─────┘  └────┬─────┘   └──────┬───────┘
-       │              │              │                │
-       └──────────────┴──────────────┴────────────────┘
-                                │
-                                ▼
-              ┌─────────────────────────────────┐
-              │      PostgreSQL 15               │
-              │  Container : bibliotheque_db     │
-              │       Port 5432                  │
-              │  • utilisateurs  • livres        │
-              │  • emprunts      • notes         │
-              └─────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────┐
+│                        NAVIGATEUR CLIENT                           │
+│         http://localhost:8080  (dashboard vanilla JS/HTML)         │
+└──────────────────────────┬─────────────────────────────────────────┘
+                           │ HTTP / REST
+                           ▼
+┌────────────────────────────────────────────────────────────────────┐
+│                    API GATEWAY (port 3000)                         │
+└──────┬─────────────┬──────────────┬──────────────┬────────────────┘
+       │             │              │              │
+       ▼             ▼              ▼              ▼
+  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐
+  │ service │  │ service  │  │ service  │  │   service    │
+  │ livres  │  │utilisat. │  │emprunts  │  │recommandation│
+  │  :3001  │  │  :3002   │  │  :3003   │  │    :3004     │
+  │ Node.js │  │ Node.js  │  │ Node.js  │  │   FastAPI    │
+  └────┬────┘  └────┬─────┘  └────┬─────┘  └──────┬───────┘
+       │             │              │               │
+       └─────────────┴──────────────┴───────────────┘
+                              │
+                              ▼
+            ┌─────────────────────────────────┐
+            │        PostgreSQL 17            │
+            │   Container : dit_bibliotheque_db│
+            │         Port 5432               │
+            │  • utilisateurs  • livres       │
+            │  • emprunts      • notes        │
+            └─────────────────────────────────┘
 ```
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
-### 👤 Gestion des utilisateurs
+### Gestion des utilisateurs
 | Fonctionnalité | Description |
 |---|---|
-| 🔐 Inscription / Connexion | Authentification JWT sécurisée |
-| 🎓 Rôles | `étudiant`, `professeur`, `personnel (gestionnaire)` |
-| 🔑 Token JWT | Validité 24h, requis pour les actions protégées |
+| Inscription / Connexion | Authentification JWT sécurisée (24h) |
+| Rôles | `etudiant`, `professeur`, `personnel` (gestionnaire) |
+| Identifiant court | `model_id` auto-généré (u001, u002…) |
+| Recherche | Par initiaux (MD), identifiant (u012), nom ou email |
 
-### 📚 Catalogue de livres
+### Catalogue de livres
 | Fonctionnalité | Description |
 |---|---|
-| 🔍 Recherche | Par titre, auteur ou ISBN |
-| 🏷️ Catégories | IA, Data Science, DevOps, Robotique, NLP, etc. |
-| 📦 Stock | Suivi en temps réel des exemplaires disponibles |
-| ✏️ Admin | Ajout, modification, suppression de livres |
+| Recherche | Par titre, auteur, ISBN ou catégorie/domaine |
+| Catégories | IA, Data Science, DevOps, Robotique, NLP, etc. |
+| Stock | Suivi en temps réel des exemplaires disponibles |
+| Admin | Ajout, suppression de livres (gestionnaire) |
 
-### 📋 Gestion des emprunts
+### Gestion des emprunts
 | Fonctionnalité | Description |
 |---|---|
-| ⏱️ Durée | **30 jours** maximum par emprunt |
-| 🚫 Limite | **3 emprunts simultanés** maximum par utilisateur |
-| ⚠️ Retard | Détection automatique au-delà de 30 jours |
-| 💰 Pénalités | **500 FCFA / jour** de retard |
-| ↩️ Retour | Traité exclusivement par le gestionnaire |
+| Durée | **30 jours** maximum par emprunt |
+| Limite | **3 emprunts simultanés** maximum par utilisateur |
+| Retard | Détection automatique au-delà de 30 jours |
+| Pénalités | **500 FCFA / jour** de retard |
+| Validation | Emprunt **et** retour exclusivement par le gestionnaire |
 
-### 🤖 Recommandations personnalisées
+### Recommandations personnalisées
 | Scénario | Comportement |
 |---|---|
-| ✅ Utilisateur dans le modèle SVD | Recommandations par filtrage collaboratif |
-| ✅ ≥ 5 emprunts (hors modèle) | Fallback : livres populaires dans vos catégories préférées |
-| ❌ < 5 emprunts | Message explicite invitant à emprunter davantage |
+| Utilisateur dans le modèle SVD | Filtrage collaboratif (scikit-surprise) |
+| ≥ 5 emprunts, hors modèle | Fallback : livres populaires dans vos catégories préférées |
+| < 5 emprunts | Message de progression avec barre d'avancement |
 
-### 📊 Tableau de bord gestionnaire
-- 📈 Statistiques globales (livres, emprunts, retards, pénalités)
-- 🏆 Top 5 livres les plus empruntés
-- 👑 Top 5 utilisateurs les plus actifs
-- 📅 Activité mensuelle des 6 derniers mois
-- ⏰ Échéances imminentes (J+3)
+### Tableau de bord gestionnaire
+- KPIs temps réel : livres disponibles, emprunts en cours, retards, pénalités FCFA
+- Liste des retards avec validation de retour en un clic
+- Emprunts récents avec historique
+- Panneau latéral : emprunts de chaque utilisateur sans quitter la page
+- Barre de statistiques avec détection automatique des retards
 
 ---
 
-## 🛠️ Stack technique
+## Stack technique
 
 ### Backend
 | Service | Technologie | Rôle |
 |---|---|---|
-| `service-livres` | Node.js 20 · Express · PostgreSQL | CRUD livres |
-| `service-utilisateurs` | Node.js 20 · Express · JWT · bcrypt | Auth & utilisateurs |
-| `service-emprunts` | Node.js 20 · Express · PostgreSQL | Emprunts & pénalités |
-| `service-recommandation` | Python 3.11 · FastAPI · scikit-surprise | SVD + fallback ML |
+| `books-service` | Node.js 20 · Express · PostgreSQL | CRUD livres |
+| `users-service` | Node.js 20 · Express · JWT · bcrypt | Auth & utilisateurs |
+| `loans-service` | Node.js 20 · Express · PostgreSQL | Emprunts & pénalités |
+| `recommendation-service` | Python 3.11 · FastAPI · scikit-surprise | SVD + fallback ML |
+| `api-gateway` | Node.js 20 · Express | Routage inter-services |
 
 ### Frontend
 | Élément | Technologie |
 |---|---|
-| Framework | React 18 |
-| HTTP Client | Axios |
-| Style | CSS-in-JS (inline styles DIT Palette) |
+| Dashboard | HTML5 / CSS3 / JavaScript (vanilla) |
+| Serveur | nginx:alpine |
+| Design | DM Mono · Playfair Display · dark theme |
 
 ### Infrastructure
 | Outil | Usage |
 |---|---|
-| 🐳 Docker Compose | Orchestration des 6 conteneurs |
-| 🐘 PostgreSQL 15 | Base de données relationnelle |
-| 📦 DVC | Versionnage des données et modèles ML |
-| 🔄 Jenkins | Pipeline CI/CD automatisé |
-| 🔐 JWT | Authentification inter-services |
+| Docker Compose | Orchestration des 7 conteneurs (profils `dev` / `prod`) |
+| PostgreSQL 17 | Base de données relationnelle |
+| DVC | Versionnage des données et modèles ML |
+| Jenkins | Pipeline CI/CD automatisé |
+| JWT | Authentification inter-services |
 
 ---
 
-## 🚀 Démarrage rapide
+## Installation et lancement avec Docker Compose
 
 ### Prérequis
 
 ```bash
-docker --version   # >= 20.x
-docker-compose --version  # >= 1.29
+docker --version          # >= 20.x
+docker compose version    # >= 2.x  (plugin intégré)
+git --version
 ```
 
-### 1️⃣ Cloner le projet
+### 1. Cloner le projet
 
 ```bash
 git clone <url-du-repo>
-cd Bibliotheque_DIT
+cd dit-bibliotheque
 ```
 
-### 2️⃣ Lancer tous les services
+### 2. Comprendre les profils Docker Compose
+
+Le fichier `docker-compose.yml` utilise des **profils** pour séparer les environnements :
+
+| Profil | Services inclus | Usage |
+|--------|-----------------|-------|
+| `dev`  | postgres, pgadmin, api-gateway, books-service, users-service, loans-service, recommendation-service | Développement local |
+| `prod` | postgres, api-gateway, books-service, users-service, loans-service, recommendation-service, frontend | Production |
+
+> pgAdmin (`:8081`) n'est disponible qu'en profil `dev`.  
+> Le frontend nginx (`:8080`) n'est disponible qu'en profil `prod`.
+
+### 3. Lancer en mode développement
 
 ```bash
-# Démarrage complet (premier lancement — build inclus)
-docker-compose up --build -d
+# Premier lancement — construit et démarre tous les services dev
+docker compose --profile dev up --build -d
 
-# Vérifier que tous les services sont opérationnels
-docker-compose ps
+# Vérifier l'état de tous les conteneurs
+docker compose --profile dev ps
+
+# Suivre les logs en temps réel
+docker compose --profile dev logs -f
+
+# Suivre les logs d'un seul service
+docker compose --profile dev logs -f loans-service
 ```
 
-### 3️⃣ Accéder à l'application
-
-| Interface | URL |
-|---|---|
-| 🌐 Application Web | http://localhost:3000 |
-| 📚 API Livres | http://localhost:3001 |
-| 👥 API Utilisateurs | http://localhost:3002 |
-| 📋 API Emprunts | http://localhost:3003 |
-| 🤖 API Recommandation | http://localhost:3004 |
-
-### 4️⃣ Réinitialiser la base de données
+### 4. Lancer en mode production (avec frontend nginx)
 
 ```bash
-# Supprime les volumes et recrée tout (Linux / macOS / Windows)
-docker-compose down -v
-docker-compose up --build -d
+# Démarre tous les services + frontend
+docker compose --profile prod up --build -d
+
+# Vérifier l'état
+docker compose --profile prod ps
 ```
 
-### 5️⃣ Corriger les mots de passe (base existante)
+### 5. Accéder à l'application
 
-Si les utilisateurs ne peuvent pas se connecter après une mise à jour, exécutez :
+| Interface | URL | Disponible en |
+|---|---|---|
+| Dashboard Bibliothèque | http://localhost:8080 | `prod` |
+| pgAdmin | http://localhost:8081 | `dev` |
+| API Gateway | http://localhost:3000 | `dev` + `prod` |
+| API Livres | http://localhost:3001 | `dev` + `prod` |
+| API Utilisateurs | http://localhost:3002 | `dev` + `prod` |
+| API Emprunts | http://localhost:3003 | `dev` + `prod` |
+| API Recommandation | http://localhost:3004 | `dev` + `prod` |
+
+### 6. Arrêter les services
 
 ```bash
-# Compatible Windows / Linux / macOS (nécessite Node.js)
-node scripts/fix-passwords.js
-```
+# Arrêter sans supprimer les données
+docker compose --profile dev down
 
-Ce script détecte et corrige automatiquement les mots de passe non hachés.
+# Arrêter ET supprimer tous les volumes (données perdues)
+docker compose --profile dev down -v
+```
 
 ---
 
-## 🔌 Services & Ports
+## Initialisation de la base de données
+
+### Initialisation automatique au premier démarrage
+
+La base de données est **initialisée automatiquement** au premier démarrage via le fichier `database/init.sql`, monté dans PostgreSQL :
+
+```yaml
+volumes:
+  - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+```
+
+Ce script crée :
+- Les tables (`utilisateurs`, `livres`, `emprunts`, `notes`)
+- Les index et contraintes
+- Les **150 livres** du catalogue
+- Les **comptes de démonstration** (gestionnaire + étudiants + professeurs)
+
+> **Important :** `init.sql` n'est exécuté **qu'une seule fois**, lors de la création initiale du volume. Si le volume existe déjà, le script est ignoré.
+
+### Paramètres de connexion
 
 ```
-localhost:3000  →  Frontend React
-localhost:3001  →  Service Livres     (Node.js / Express)
-localhost:3002  →  Service Utilisateurs (Node.js / Express + JWT)
-localhost:3003  →  Service Emprunts   (Node.js / Express)
-localhost:3004  →  Service Recommandation (FastAPI / Python)
-localhost:5432  →  PostgreSQL 15
+Host     : localhost
+Port     : 5432
+Database : dit_bibliotheque
+User     : dit_user
+Password : dit_password
 ```
 
-### Health checks
+Connexion depuis la machine hôte :
 
 ```bash
-curl http://localhost:3001/health
-curl http://localhost:3002/health
-curl http://localhost:3003/health
-curl http://localhost:3004/health
+psql -h localhost -p 5432 -U dit_user -d dit_bibliotheque
+```
+
+Via pgAdmin (profil `dev`) :
+- URL : http://localhost:8081
+- Email : `admin@gmail.com` / Mot de passe : `admin1234`
+- Ajouter le serveur : host `postgres`, port `5432`, user `dit_user`
+
+### Réinitialiser complètement la base de données
+
+```bash
+# 1. Arrêter et supprimer le volume PostgreSQL
+docker compose --profile dev down -v
+
+# 2. Redémarrer (init.sql sera rejoué)
+docker compose --profile dev up --build -d
+
+# 3. Vérifier que la DB est saine
+docker exec dit_bibliotheque_db pg_isready -U dit_user -d dit_bibliotheque
+```
+
+### Injecter des données fraîches manuellement
+
+```bash
+# Exécuter un script SQL dans le conteneur
+docker exec -i dit_bibliotheque_db \
+  psql -U dit_user -d dit_bibliotheque < database/init.sql
+
+# Inspecter les tables depuis le conteneur
+docker exec -it dit_bibliotheque_db \
+  psql -U dit_user -d dit_bibliotheque -c "\dt"
+
+# Compter les lignes par table
+docker exec dit_bibliotheque_db \
+  psql -U dit_user -d dit_bibliotheque \
+  -c "SELECT 'utilisateurs', COUNT(*) FROM utilisateurs
+      UNION ALL SELECT 'livres', COUNT(*) FROM livres
+      UNION ALL SELECT 'emprunts', COUNT(*) FROM emprunts;"
 ```
 
 ---
 
-## 📡 API Reference
+## Entraînement et reproduction du modèle avec DVC
 
-### 📚 Service Livres — `localhost:3001`
+### Prérequis Python
+
+```bash
+# Créer un environnement virtuel (ou utiliser conda)
+python -m venv .venv
+source .venv/bin/activate          # Linux / macOS
+.venv\Scripts\activate             # Windows
+
+# Installer les dépendances ML
+pip install dvc scikit-surprise pandas joblib
+```
+
+### Pipeline DVC
+
+Le pipeline est défini dans `dvc.yaml` et comprend 3 étapes séquentielles :
+
+```
+loans.csv (données brutes)
+    │
+    ▼  [preprocess]
+loans_clean.csv (données nettoyées)
+    │
+    ▼  [train]   ← hyperparamètres depuis params.yaml
+model.pkl (modèle SVD entraîné)
+    │
+    ▼  [evaluate]
+metrics/metrics.json (RMSE, MAE)
+```
+
+| Étape | Commande | Entrée | Sortie |
+|---|---|---|---|
+| `preprocess` | `python dvc-pipeline/preprocess.py` | `dvc-pipeline/data/loans.csv` | `dvc-pipeline/data/loans_clean.csv` |
+| `train` | `python dvc-pipeline/train.py` | `loans_clean.csv` + `params.yaml` | `dvc-pipeline/models/model.pkl` |
+| `evaluate` | `python dvc-pipeline/evaluate.py` | `model.pkl` + `loans_clean.csv` | `metrics/metrics.json` |
+
+### Étape 0 — Exporter les données depuis l'API
+
+Avant de lancer `dvc repro`, récupérez les données d'emprunts actuelles :
+
+```bash
+# Exporter l'historique des emprunts au format CSV
+curl http://localhost:3003/api/emprunts/export/csv \
+  -o dvc-pipeline/data/loans.csv
+
+# Vérifier le fichier exporté
+head -5 dvc-pipeline/data/loans.csv
+# → user_id,book_id,categorie,statut,date_emprunt,date_retour_effective,rating
+```
+
+### Étape 1 — Reproduire le pipeline complet
+
+```bash
+# Reproduire toutes les étapes (only reruns what changed)
+dvc repro
+
+# Forcer la réexécution complète même si rien n'a changé
+dvc repro --force
+```
+
+### Étape 2 — Consulter les métriques
+
+```bash
+# Afficher les métriques du dernier entraînement
+dvc metrics show
+
+# Comparer avec une version précédente (tag ou commit)
+dvc metrics diff HEAD~1
+
+# Exemple de sortie :
+# Path                   Metric    Old    New    Change
+# metrics/metrics.json   rmse      1.42   1.38   -0.04
+# metrics/metrics.json   mae       1.31   1.27   -0.04
+```
+
+### Étape 3 — Modifier les hyperparamètres
+
+Éditez `dvc-pipeline/params.yaml` :
+
+```yaml
+train:
+  n_factors: 50      # Dimensions latentes (défaut : 50)
+  n_epochs:  20      # Itérations d'entraînement (défaut : 20)
+  lr_all:    0.005   # Taux d'apprentissage (défaut : 0.005)
+  reg_all:   0.02    # Régularisation L2 (défaut : 0.02)
+```
+
+Puis relancez :
+
+```bash
+dvc repro          # détecte le changement de params et ré-entraîne
+dvc metrics show   # compare les nouvelles métriques
+```
+
+### Étape 4 — Charger le nouveau modèle dans le service
+
+```bash
+# Copier le modèle dans le volume du service de recommandation
+docker cp dvc-pipeline/models/model.pkl recommendation_service:/app/models/model.pkl
+
+# Recharger le modèle via l'API (sans redémarrer le conteneur)
+curl -X POST http://localhost:3004/api/train \
+  -H "Content-Type: application/json" \
+  -d '{"n_factors": 50, "n_epochs": 20}'
+
+# Vérifier que le modèle est chargé
+curl http://localhost:3004/api/model/info
+```
+
+### Versionnage des artefacts
+
+```bash
+# Vérifier l'état du pipeline
+dvc status
+
+# Ajouter le modèle au cache DVC
+dvc add dvc-pipeline/models/model.pkl
+
+# Pousser les artefacts vers le remote DVC (si configuré)
+dvc push
+
+# Récupérer les artefacts depuis le remote
+dvc pull
+```
+
+---
+
+## Tests des endpoints
+
+Les tests ci-dessous utilisent `curl`. Adaptez `TOKEN` à votre environnement.
+
+### Health checks — tous les services
+
+```bash
+curl http://localhost:3001/health   # livres
+curl http://localhost:3002/health   # utilisateurs
+curl http://localhost:3003/health   # emprunts
+curl http://localhost:3004/health   # recommandation
+```
+
+Réponse attendue pour chaque :
+```json
+{ "status": "ok", "service": "<nom>" }
+```
+
+### Authentification
+
+```bash
+# Connexion gestionnaire → récupérer le token
+TOKEN=$(curl -s -X POST http://localhost:3002/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@dit.sn","mot_de_passe":"admin2026"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+echo "Token OK : ${TOKEN:0:40}…"
+
+# Connexion étudiant
+TOKEN_ETU=$(curl -s -X POST http://localhost:3002/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"mamadou1@dit.sn","mot_de_passe":"dit2026"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+```
+
+### Service Livres (port 3001)
 
 ```bash
 # Lister les livres (paginé)
-GET  /api/livres?page=1&limit=20
+curl "http://localhost:3001/api/livres?page=1&limit=5"
 
-# Rechercher
-GET  /api/livres/search?q=intelligence
+# Rechercher par titre
+curl "http://localhost:3001/api/livres?page=1&limit=10&search=python"
 
-# Livres disponibles
-GET  /api/livres/disponibles
+# Livres disponibles uniquement
+curl "http://localhost:3001/api/livres/disponibles"
 
-# Détail d'un livre
-GET  /api/livres/:id
+# Détail d'un livre (remplacer <id> par un UUID réel)
+curl "http://localhost:3001/api/livres/<id>"
 
 # Ajouter un livre (gestionnaire)
-POST /api/livres
-Body: { titre, auteur, isbn, categorie, editeur, annee_publication, nombre_exemplaires }
+curl -X POST http://localhost:3001/api/livres \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "titre": "Docker en pratique",
+    "auteur": "Ian Miell",
+    "isbn": "978-1617294808",
+    "categorie": "DevOps",
+    "nombre_exemplaires": 3
+  }'
 
-# Modifier / Supprimer (gestionnaire)
-PUT    /api/livres/:id
-DELETE /api/livres/:id
+# Supprimer un livre (gestionnaire)
+curl -X DELETE http://localhost:3001/api/livres/<id> \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-### 👥 Service Utilisateurs — `localhost:3002`
+### Service Utilisateurs (port 3002)
 
 ```bash
-# Inscription
-POST /api/auth/register
-Body: { nom, prenom, email, mot_de_passe, type_utilisateur }
+# Inscrire un nouvel utilisateur
+curl -X POST http://localhost:3002/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nom": "Diallo",
+    "prenom": "Mamadou",
+    "email": "nouveau@dit.sn",
+    "mot_de_passe": "password123",
+    "type_utilisateur": "etudiant"
+  }'
 
-# Connexion → retourne un token JWT
-POST /api/auth/login
-Body: { email, mot_de_passe }
+# Profil de l'utilisateur connecté
+curl http://localhost:3002/api/utilisateurs/me \
+  -H "Authorization: Bearer $TOKEN_ETU"
 
-# Profil utilisateur connecté
-GET /api/utilisateurs/me
-Headers: Authorization: Bearer <token>
+# Liste de tous les utilisateurs (gestionnaire)
+curl "http://localhost:3002/api/utilisateurs?page=1&limit=20" \
+  -H "Authorization: Bearer $TOKEN"
 
-# Liste des utilisateurs (gestionnaire)
-GET /api/utilisateurs?page=1&limit=20
-Headers: Authorization: Bearer <token>
+# Rechercher par type
+curl "http://localhost:3002/api/utilisateurs?type=etudiant" \
+  -H "Authorization: Bearer $TOKEN"
+
+# Statistiques par type (public)
+curl http://localhost:3002/api/utilisateurs/stats
 ```
 
-### 📋 Service Emprunts — `localhost:3003`
+### Service Emprunts (port 3003)
 
 ```bash
-# Créer un emprunt (limite : 3 simultanés)
-POST /api/emprunts
-Body: { utilisateur_id, livre_id }
+# Statistiques globales (public)
+curl http://localhost:3003/api/emprunts/stats
+
+# Emprunts en cours
+curl "http://localhost:3003/api/emprunts?statut=en_cours&limit=10"
+
+# Emprunts en retard avec pénalités
+curl http://localhost:3003/api/emprunts/penalites
 
 # Historique d'un utilisateur
-GET  /api/emprunts/utilisateur/:userId
+curl http://localhost:3003/api/emprunts/utilisateur/<user_id>
 
-# Détail d'un emprunt (inclut jours_retard et penalite_fcfa)
-GET  /api/emprunts/:id
+# Créer un emprunt (gestionnaire)
+curl -X POST http://localhost:3003/api/emprunts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "utilisateur_id": "<uuid-utilisateur>",
+    "livre_id": "<uuid-livre>"
+  }'
 
-# Retourner un livre (gestionnaire uniquement)
-PATCH /api/emprunts/:id/retourner
+# Valider un retour (gestionnaire)
+curl -X PATCH http://localhost:3003/api/emprunts/<id>/retourner \
+  -H "Authorization: Bearer $TOKEN"
 
-# Liste des retards avec pénalités
-GET  /api/emprunts/penalites
+# Détecter et mettre à jour les retards (gestionnaire)
+curl -X POST http://localhost:3003/api/emprunts/detecter-retards \
+  -H "Authorization: Bearer $TOKEN"
 
-# Statistiques globales
-GET  /api/emprunts/stats
-
-# Détecter et mettre à jour les retards
-POST /api/emprunts/detecter-retards
-
-# Dashboard admin
-GET  /api/admin/dashboard
-Headers: Authorization: Bearer <token>
-
-# Historique complet d'un utilisateur (admin)
-GET  /api/admin/emprunts/utilisateur/:userId
-Headers: Authorization: Bearer <token>
+# Exporter les données pour DVC
+curl http://localhost:3003/api/emprunts/export/csv \
+  -o dvc-pipeline/data/loans.csv
 ```
 
-### 🤖 Service Recommandation — `localhost:3004`
+### Service Recommandation (port 3004)
 
 ```bash
-# Obtenir des recommandations personnalisées
-GET  /api/recommendations/:user_id?top_k=10
+# Recommandations par UUID utilisateur
+curl "http://localhost:3004/api/recommendations/<user_uuid>?top_k=10"
 
-# Entraîner le modèle SVD
-POST /api/train
-Body: { n_factors, n_epochs, lr_all, reg_all }  (optionnel)
+# Recommandations par model_id (u001, u002…)
+curl "http://localhost:3004/api/recommendations/u001?top_k=5"
 
-# Informations sur le modèle chargé
-GET  /api/model/info
+# Infos sur le modèle chargé
+curl http://localhost:3004/api/model/info
+
+# Ré-entraîner le modèle SVD (nécessite loans_clean.csv)
+curl -X POST http://localhost:3004/api/train \
+  -H "Content-Type: application/json" \
+  -d '{
+    "n_factors": 50,
+    "n_epochs": 20,
+    "lr_all": 0.005,
+    "reg_all": 0.02
+  }'
+```
+
+### Codes de retour attendus
+
+| Code | Signification |
+|------|---------------|
+| 200 | Succès |
+| 201 | Ressource créée |
+| 204 | Supprimé (sans body) |
+| 400 | Données invalides ou manquantes |
+| 401 | Token manquant ou invalide |
+| 403 | Droits insuffisants (non-gestionnaire) |
+| 404 | Ressource introuvable |
+| 409 | Conflit (doublon ISBN, limite emprunts…) |
+| 503 | Modèle ML non chargé |
+
+### Test de sécurité des routes protégées
+
+```bash
+# POST sans token → 401
+curl -s -o /dev/null -w "%{http_code}" \
+  -X POST http://localhost:3003/api/emprunts \
+  -H "Content-Type: application/json" \
+  -d '{"utilisateur_id":"x","livre_id":"y"}'
+# → 401
+
+# PATCH sans token → 401
+curl -s -o /dev/null -w "%{http_code}" \
+  -X PATCH http://localhost:3003/api/emprunts/fake-id/retourner
+# → 401
+
+# GET stats (public) → 200
+curl -s -o /dev/null -w "%{http_code}" \
+  http://localhost:3003/api/emprunts/stats
+# → 200
 ```
 
 ---
 
-## 👤 Comptes de démonstration
+## Services et ports
+
+```
+localhost:3000  →  API Gateway          (Node.js / Express)
+localhost:3001  →  Service Livres       (Node.js / Express)
+localhost:3002  →  Service Utilisateurs (Node.js / Express + JWT)
+localhost:3003  →  Service Emprunts     (Node.js / Express)
+localhost:3004  →  Service Recommandation (FastAPI / Python)
+localhost:5432  →  PostgreSQL 17
+localhost:8080  →  Frontend HTML/nginx  (profil prod)
+localhost:8081  →  pgAdmin              (profil dev)
+```
+
+---
+
+## API Reference
+
+### Livres — `localhost:3001`
+
+```
+GET    /api/livres                    Liste paginée
+GET    /api/livres/disponibles        Livres avec stock > 0
+GET    /api/livres/:id                Détail d'un livre
+POST   /api/livres                    Créer (Admin)
+PUT    /api/livres/:id                Modifier (Admin)
+DELETE /api/livres/:id                Supprimer (Admin)
+GET    /api/admin/livres/stats        Statistiques catalogue (Admin)
+POST   /api/admin/livres/bulk         Import en masse (Admin)
+```
+
+### Utilisateurs — `localhost:3002`
+
+```
+POST   /api/auth/register             Inscription (public)
+POST   /api/auth/login                Connexion → token JWT (public)
+GET    /api/utilisateurs/stats        Répartition par type (public)
+GET    /api/utilisateurs/me           Profil connecté (JWT)
+GET    /api/utilisateurs              Liste paginée (JWT)
+GET    /api/utilisateurs/:id          Détail (JWT)
+PUT    /api/utilisateurs/:id          Modifier (JWT)
+PATCH  /api/utilisateurs/:id/toggle   Activer/désactiver (JWT)
+DELETE /api/utilisateurs/:id          Supprimer (JWT)
+PATCH  /api/admin/utilisateurs/:id/reset-password  (Admin)
+```
+
+### Emprunts — `localhost:3003`
+
+```
+GET    /api/emprunts                  Liste paginée (public)
+GET    /api/emprunts/stats            Statistiques globales (public)
+GET    /api/emprunts/penalites        Retards + pénalités (public)
+GET    /api/emprunts/export/csv       Export CSV pour DVC (public)
+GET    /api/emprunts/utilisateur/:id  Historique utilisateur (public)
+GET    /api/emprunts/:id              Détail emprunt (public)
+POST   /api/emprunts                  Créer emprunt (Admin)
+PATCH  /api/emprunts/:id/retourner    Valider retour (Admin)
+POST   /api/emprunts/detecter-retards Mise à jour statuts (Admin)
+GET    /api/admin/dashboard           Tableau de bord complet (Admin)
+PATCH  /api/admin/emprunts/:id/forcer-retour  (Admin)
+PATCH  /api/admin/emprunts/:id/prolonger      (Admin)
+```
+
+### Recommandation — `localhost:3004`
+
+```
+GET    /api/recommendations/:user_id  Recommandations (public)
+POST   /api/train                     Ré-entraîner SVD (public)
+GET    /api/model/info                Infos modèle (public)
+```
+
+---
+
+## Comptes de démonstration
 
 | Rôle | Email | Mot de passe |
 |---|---|---|
-| 🔑 Gestionnaire (Admin) | `admin@dit.sn` | `admin2026` |
-| 🎓 Étudiant | `mamadou1@dit.sn` | `dit2026` |
-| 🎓 Étudiant | `fatou2@dit.sn` | `dit2026` |
-| 👨‍🏫 Professeur | `ibrahima3@dit.sn` | `dit2026` |
-| 👩‍💼 Personnel | `aminata4@dit.sn` | `dit2026` |
+| Gestionnaire (Admin) | `admin@dit.sn` | `admin2026` |
+| Étudiant | `mamadou1@dit.sn` | `dit2026` |
+| Étudiant | `fatou2@dit.sn` | `dit2026` |
+| Professeur | `ibrahima3@dit.sn` | `dit2026` |
+| Personnel | `aminata4@dit.sn` | `dit2026` |
 
-> **Mot de passe par défaut de tous les comptes seed :** `dit2026`
->
-> Les utilisateurs peuvent aussi s'inscrire librement via l'interface avec leur propre mot de passe.
->
-> **Note :** Le gestionnaire a accès au tableau de bord complet, à la gestion des livres, des utilisateurs et peut valider les retours de livres.
+> Mot de passe par défaut de tous les comptes seed : `dit2026`
 
 ---
 
-## 📐 Règles métier
+## Règles métier
 
 ```
-📖 DURÉE D'EMPRUNT
-   └── 30 jours maximum à partir de la date d'emprunt
+DURÉE D'EMPRUNT
+  └── 30 jours à partir de la date d'emprunt
+      (configurable via DUREE_EMPRUNT_JOURS dans .env)
 
-🚫 LIMITE D'EMPRUNTS SIMULTANÉS
-   └── 3 emprunts actifs maximum par utilisateur
-       └── Erreur 409 si dépassement
+LIMITE D'EMPRUNTS SIMULTANÉS
+  └── 3 emprunts actifs maximum par utilisateur
+  └── Erreur 409 si dépassement
 
-⚠️ RETARD
-   └── Tout dépassement des 30 jours est un retard
+RETARD
+  └── Statut passe de en_cours → en_retard automatiquement
+  └── Déclenchement : POST /api/emprunts/detecter-retards
+      (appelé automatiquement à chaque chargement du dashboard)
 
-💰 CALCUL DES PÉNALITÉS
-   └── Pénalité = Jours de retard × 500 FCFA
-       Exemple : 5 jours de retard → 2 500 FCFA
+CALCUL DES PÉNALITÉS
+  └── Pénalité = Jours de retard × 500 FCFA
+      Exemple : 5 jours → 2 500 FCFA
 
-↩️ RETOUR DE LIVRE
-   └── Visible par l'utilisateur (bouton affiché)
-   └── Cliquable et effectif uniquement par le GESTIONNAIRE
+VALIDATION DES EMPRUNTS ET RETOURS
+  └── Créer un emprunt : gestionnaire uniquement (JWT type=personnel)
+  └── Valider un retour : gestionnaire uniquement (JWT type=personnel)
+  └── Les requêtes sans token sur ces routes → 401
+  └── Les requêtes avec token non-gestionnaire → 403
 
-🤖 RECOMMANDATIONS
-   └── SVD (filtrage collaboratif) si utilisateur dans le modèle
-   └── Fallback catégoriel si ≥ 5 emprunts hors modèle
-   └── Refus explicite si < 5 emprunts (message d'encouragement)
-```
-
----
-
-## 📊 Pipeline ML avec DVC
-
-Le système de recommandation est alimenté par un pipeline **DVC** versionné.
-
-```
-dvc-pipeline/
-├── loans.csv           ← Données brutes d'emprunts
-├── loans_clean.csv     ← Données nettoyées (preprocess)
-├── models/model.pkl    ← Modèle SVD entraîné
-├── preprocess.py       ← Nettoyage et formatage
-├── train.py            ← Entraînement SVD (scikit-surprise)
-├── evaluate.py         ← Métriques RMSE / MAE
-└── params.yaml         ← Hyperparamètres (n_factors, n_epochs…)
-```
-
-### Commandes DVC
-
-```bash
-# Activer l'environnement Python
-conda activate bibliotheque2
-
-# Reproduire le pipeline complet
-dvc repro
-
-# Voir les métriques du modèle
-dvc metrics show
-
-# Comparer avec une version précédente
-dvc metrics diff v1.0
-
-# Pousser les artefacts vers le remote
-dvc push
-```
-
-### Algorithme utilisé
-
-```
-Algorithme : SVD (Singular Value Decomposition)
-Bibliothèque : scikit-surprise
-
-Paramètres par défaut :
-  • n_factors  = 50    (dimensions latentes)
-  • n_epochs   = 20    (itérations d'entraînement)
-  • lr_all     = 0.005 (taux d'apprentissage)
-  • reg_all    = 0.02  (régularisation)
-
-Métriques de performance :
-  • RMSE (Root Mean Square Error)
-  • MAE  (Mean Absolute Error)
+RECOMMANDATIONS
+  └── SVD (filtrage collaboratif) si utilisateur connu du modèle
+  └── Fallback catégoriel si ≥ 5 emprunts et hors modèle
+  └── Refus explicite si < 5 emprunts (barre de progression)
 ```
 
 ---
 
-## 🔁 CI/CD avec Jenkins
+## CI/CD avec Jenkins
 
 Le fichier `Jenkinsfile` à la racine définit le pipeline d'intégration continue :
 
 ```groovy
 Pipeline Jenkins :
   1. Checkout       → Récupère le code depuis Git
-  2. Build          → docker-compose build
-  3. Test           → Tests des endpoints health
-  4. DVC Pipeline   → dvc repro (entraînement modèle)
-  5. Deploy         → docker-compose up -d
+  2. Build          → docker compose --profile prod build
+  3. Test           → Health checks sur les 4 services
+  4. DVC Pipeline   → dvc repro (prétraitement + entraînement + évaluation)
+  5. Deploy         → docker compose --profile prod up -d
   6. Notify         → Notification de succès/échec
 ```
 
 ---
 
-## 🗂️ Structure du projet
+## Structure du projet
 
 ```
-Bibliotheque_DIT/
+dit-bibliotheque/
 │
-├── 📁 database/
-│   └── init.sql                    ← Schéma PostgreSQL + données de test
+├── database/
+│   └── init.sql                         ← Schéma + données seed (150 livres)
 │
-├── 📁 service-livres/              ← Microservice Livres (Node.js)
+├── backend/
+│   ├── api-gateway/                     ← Routage inter-services (Node.js)
+│   ├── books-service/                   ← Microservice Livres (Node.js)
+│   │   ├── Dockerfile
+│   │   └── src/
+│   │       ├── controllers/book.controller.js
+│   │       ├── models/book.model.js
+│   │       └── routes/book.routes.js
+│   ├── users-service/                   ← Microservice Auth/Utilisateurs
+│   │   ├── Dockerfile
+│   │   └── src/
+│   │       ├── controllers/auth.controller.js
+│   │       ├── models/user.model.js
+│   │       └── routes/
+│   ├── loans-service/                   ← Microservice Emprunts
+│   │   ├── Dockerfile
+│   │   └── src/
+│   │       ├── controllers/loan.controller.js
+│   │       ├── middleware/admin.middleware.js
+│   │       ├── models/loan.model.js
+│   │       └── routes/loan.routes.js
+│   └── recommendation-service-python/   ← Microservice ML (FastAPI)
+│       ├── Dockerfile
+│       ├── main.py
+│       ├── api/
+│       │   ├── routes.py                ← Endpoints + logique fallback
+│       │   ├── schemas.py               ← Modèles Pydantic
+│       │   └── db.py                    ← DB + recommandations catégorielles
+│       └── ml/
+│           ├── recommender.py           ← Algorithme SVD
+│           └── loader.py                ← Chargement du modèle
+│
+├── frontend/                            ← Dashboard HTML/JS (nginx)
 │   ├── Dockerfile
-│   └── src/
-│       ├── controllers/book.controller.js
-│       ├── models/book.model.js
-│       └── routes/book.routes.js
+│   └── index.html                       ← Application complète (SPA vanilla)
 │
-├── 📁 service-utilisateurs/        ← Microservice Auth/Utilisateurs (Node.js)
-│   ├── Dockerfile
-│   └── src/
-│       ├── controllers/auth.controller.js
-│       ├── models/user.model.js
-│       └── routes/auth.routes.js
+├── dvc-pipeline/                        ← Pipeline ML versionné
+│   ├── preprocess.py                    ← Nettoyage et formatage
+│   ├── train.py                         ← Entraînement SVD (scikit-surprise)
+│   ├── evaluate.py                      ← Métriques RMSE / MAE
+│   ├── params.yaml                      ← Hyperparamètres
+│   ├── data/
+│   │   ├── loans.csv                    ← Données brutes (export API)
+│   │   └── loans_clean.csv             ← Données nettoyées
+│   └── models/
+│       └── model.pkl                    ← Modèle SVD entraîné
 │
-├── 📁 service-emprunts/            ← Microservice Emprunts (Node.js)
-│   ├── Dockerfile
-│   └── src/
-│       ├── controllers/loan.controller.js
-│       ├── controllers/admin.controller.js
-│       ├── models/loan.model.js
-│       └── routes/loan.routes.js
-│
-├── 📁 service-recommandation/      ← Microservice ML (FastAPI/Python)
-│   ├── Dockerfile
-│   ├── main.py                     ← App FastAPI + CORS
-│   ├── api/
-│   │   ├── routes.py               ← Endpoints + logique fallback
-│   │   ├── schemas.py              ← Modèles Pydantic
-│   │   └── db.py                   ← Connexion DB + recommandations
-│   └── ml/
-│       ├── recommender.py          ← Algorithme SVD
-│       └── loader.py               ← Chargement du modèle
-│
-├── 📁 frontend/                    ← Application React 18
-│   ├── Dockerfile
-│   └── src/
-│       ├── App.js                  ← Composant principal (user + admin)
-│       └── services/api.js
-│
-├── 📁 dvc-pipeline/                ← Pipeline ML versionné
-│   ├── preprocess.py
-│   ├── train.py
-│   ├── evaluate.py
-│   ├── params.yaml
-│   ├── data/loans.csv
-│   └── models/model.pkl
-│
-├── 📁 docs/                        ← Documentation
-│   ├── architecture.png
+├── docs/                                ← Documentation
 │   ├── api-endpoints.md
-│   └── report.pdf
+│   └── Images/
 │
-├── 📁 metrics/
-│   └── metrics.json                ← Métriques DVC exportées
+├── metrics/
+│   └── metrics.json                     ← Métriques DVC exportées
 │
-├── 🐳 docker-compose.yml           ← Orchestration des 6 conteneurs
-├── 🐳 docker-compose.override.yml  ← Surcharges dev
-├── ⚙️  Jenkinsfile                  ← Pipeline CI/CD
-├── 📄 dvc.yaml                     ← Définition du pipeline DVC
-└── 📄 dvc.lock                     ← Verrou des versions DVC
+├── docker-compose.yml                   ← Orchestration (profils dev / prod)
+├── dvc.yaml                             ← Définition du pipeline DVC
+├── dvc.lock                             ← Verrou des versions DVC
+└── Jenkinsfile                          ← Pipeline CI/CD
 ```
 
 ---
 
-## 🗃️ Schéma de base de données
+## Schéma de base de données
 
 ```sql
-utilisateurs                    livres
-─────────────────               ──────────────────────
-id            UUID PK           id            UUID PK
-nom           VARCHAR           titre         VARCHAR
-prenom        VARCHAR           auteur        VARCHAR
-email         VARCHAR UNIQUE    isbn          VARCHAR UNIQUE
-mot_de_passe  VARCHAR           categorie     VARCHAR
-type_utilisateur VARCHAR        editeur       VARCHAR
-model_id      VARCHAR           annee_publication INT
-actif         BOOLEAN           nombre_exemplaires INT
-created_at    TIMESTAMP         exemplaires_disponibles INT
-                                model_id      VARCHAR
+utilisateurs                       livres
+──────────────────────             ────────────────────────────
+id            UUID PK              id            UUID PK
+nom           VARCHAR(100)         titre         VARCHAR
+prenom        VARCHAR(100)         auteur        VARCHAR
+email         VARCHAR(150) UNIQUE  isbn          VARCHAR UNIQUE
+mot_de_passe  VARCHAR(255)         categorie     VARCHAR
+type_utilisateur VARCHAR(20)       editeur       VARCHAR
+  CHECK IN ('etudiant',            annee_publication INT
+    'professeur','personnel')      nombre_exemplaires INT
+model_id      VARCHAR(10) UNIQUE   exemplaires_disponibles INT
+actif         BOOLEAN DEFAULT TRUE model_id      VARCHAR UNIQUE
+created_at    TIMESTAMP            created_at    TIMESTAMP
 
-emprunts                        notes
-─────────────────               ──────────────────────
-id                  UUID PK     id            UUID PK
-utilisateur_id      UUID FK     utilisateur_id UUID FK
-livre_id            UUID FK     livre_id      UUID FK
-date_emprunt        DATE        note          NUMERIC(2,1)
-date_retour_prevue  DATE           [1.0 – 5.0]
-date_retour_effective DATE      created_at    TIMESTAMP
-statut    VARCHAR  ← en_cours
-           (CHECK)    en_retard  UNIQUE(utilisateur_id, livre_id)
-                      retourne
-jours_retard  [calculé]
-penalite_fcfa [calculé: jours × 500 FCFA]
+emprunts                           notes
+────────────────────────           ────────────────────────────
+id                  UUID PK        id            UUID PK
+utilisateur_id      UUID FK        utilisateur_id UUID FK
+livre_id            UUID FK        livre_id      UUID FK
+date_emprunt        DATE           note          NUMERIC(2,1) [1–5]
+date_retour_prevue  DATE           created_at    TIMESTAMP
+date_retour_effective DATE
+statut    VARCHAR CHECK IN         UNIQUE(utilisateur_id, livre_id)
+  ('en_cours','en_retard','retourne')
+[jours_retard  calculé à la volée]
+[penalite_fcfa calculé: jours × 500 FCFA]
 ```
 
 ---
 
-## 👥 Équipe
+## Équipe
 
 | Membre | Responsabilité |
 |---|---|
-| **Maurice AHOUANSOU** | Base de données ;Service utilisateurs et rapport |
-| **Ibrahima DIALLO** | Service emprunt |
+| **Maurice AHOUANSOU** | Base de données · Service utilisateurs · Rapport |
+| **Ibrahima DIALLO** | Service emprunts |
 | **Fatoumata SIDIBE** | Service livres |
 | **Abdin KOUSSUBE** | Service recommandation |
 | **Abdoul G. DIALLO** | Frontend |
 | **M. DIAKITE** | DVC pipeline |
-| **Seydou KABORE** | README et Docker Compose |
+| **Seydou KABORE** | README · Docker Compose |
 | **M. KANE** | Backend / intégration |
 
 ---
